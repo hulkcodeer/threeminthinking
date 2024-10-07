@@ -36,7 +36,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
     await Future.delayed(const Duration(seconds: 2));
     var deviceId = await getDeviceUniqueId();
     await _sendDeviceIdToServer(deviceId);
-    Navigator.of(context).pushReplacementNamed('/main');
+    // Navigator.of(context).pushReplacementNamed('/main');
   }
 
   Future<void> _sendDeviceIdToServer(String id) async {
