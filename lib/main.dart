@@ -10,10 +10,10 @@ const supabaseAnonKey =
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  await Supabase.initialize(
-    url: supabaseUrl,
-    anonKey: supabaseAnonKey,
-  );
+  // await Supabase.initialize(
+  //   url: supabaseUrl,
+  //   anonKey: supabaseAnonKey,
+  // );
 
   runApp(const ProviderScope(child: MyApp()));
 }
@@ -26,7 +26,6 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp.router(
       routerConfig: router,
-      title: '3분 생각',
     );
   }
 }
