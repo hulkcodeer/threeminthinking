@@ -2,7 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 // User 모델 클래스
 class ThinkingUser {
-  final String id;
+  final int id;
   final String deviceId;
   final DateTime createdAt;
   final DateTime updatedAt;

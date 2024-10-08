@@ -1,7 +1,7 @@
 import 'package:go_router/go_router.dart';
 import 'package:flutter/material.dart';
-import 'package:threeminthinking/screens/splash.dart';
-// 여기에 필요한 화면들을 import 합니다
+import 'package:threeminthinking/screens/home_screen.dart';
+import 'package:threeminthinking/screens/splash_screen.dart';
 
 final router = GoRouter(
   routes: [
@@ -9,5 +9,16 @@ final router = GoRouter(
       path: '/',
       builder: (context, state) => const SplashScreen(),
     ),
+    GoRoute(
+      path: '/main',
+      builder: (context, state) => const HomeScreen(),
+    ),
+    // GoRoute(
+    //   path: '/history',
+    //   builder: (context, state) {
+    //     final date = state.queryParams['date'];
+    //     return HistoryScreen(date: date);
+    //   },
+    // ),
   ],
 );

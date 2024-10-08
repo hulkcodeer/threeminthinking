@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:threeminthinking/utils/router.dart';
 
@@ -10,10 +11,12 @@ const supabaseAnonKey =
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // await Supabase.initialize(
-  //   url: supabaseUrl,
-  //   anonKey: supabaseAnonKey,
-  // );
+  MobileAds.instance.initialize();
+
+  await Supabase.initialize(
+    url: supabaseUrl,
+    anonKey: supabaseAnonKey,
+  );
 
   runApp(const ProviderScope(child: MyApp()));
 }
