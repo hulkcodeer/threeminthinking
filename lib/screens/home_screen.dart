@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:threeminthinking/utils/ad_helper.dart';
+import 'package:threeminthinking/utils/hexcolor.dart';
 import '../providers/user_provider.dart';
 import '../providers/thinking_log_provider.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
@@ -96,11 +98,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final thinkingLogs = ref.watch(thinkingLogsProvider);
 
     return Scaffold(
+      backgroundColor: HexColor('#FFFFFFFF'),
       body: Column(
         children: [
           _buildHeader(),
           _buildCalendar(),
-          Spacer(),
+          const Spacer(),
           _buildButton(),
           _buildAdBanner(),
         ],
@@ -115,7 +118,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       child: Row(
         children: [
           IconButton(
-            icon: Image.asset('assets/images/left_arrow.png',
+            icon: SvgPicture.asset('assets/images/left_arrow.svg',
                 width: 42, height: 42),
             onPressed: () => setState(() {
               _focusedDay =
@@ -132,7 +135,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 ),
                 SizedBox(height: 25),
                 Lottie.asset(
-                  'assets/lottie/$_lottieFileName.json',
+                  'assets/lotties/$_lottieFileName.json',
                   width: 120,
                   height: 120,
                 ),
@@ -148,7 +151,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             ),
           ),
           IconButton(
-            icon: Image.asset('assets/images/right_arrow.png',
+            icon: SvgPicture.asset('assets/images/right_arrow.svg',
                 width: 42, height: 42),
             onPressed: () => setState(() {
               _focusedDay =
@@ -163,49 +166,74 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   Widget _buildCalendar() {
     return Padding(
-      padding: EdgeInsets.fromLTRB(43, 30, 43, 32),
+      padding: const EdgeInsets.fromLTRB(43, 30, 43, 32),
       child: TableCalendar(
         firstDay: DateTime.utc(2010, 10, 16),
         lastDay: DateTime.utc(2030, 3, 14),
         focusedDay: _focusedDay,
+        headerVisible: false,
+        daysOfWeekVisible: false,
         selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
         onDaySelected: (day, focusedDay) {
           context.push('/history?date=${DateFormat('yyyy-MM-dd').format(day)}');
         },
         calendarStyle: CalendarStyle(
-          selectedDecoration: BoxDecoration(
+          selectedDecoration: const BoxDecoration(
             color: Color(0xFFFFE58B),
             shape: BoxShape.circle,
+          ),
+          todayTextStyle: const TextStyle(
+            color: Colors.black,
+            fontSize: 16,
+            fontWeight: FontWeight.w700,
           ),
           todayDecoration: BoxDecoration(
             color: Colors.transparent,
             shape: BoxShape.circle,
-            border: Border.all(color: Colors.black, width: 1),
+            border: Border.all(color: Colors.transparent, width: 0),
           ),
-          markerDecoration: BoxDecoration(
+          markerDecoration: const BoxDecoration(
             color: Color(0xFFFFE58B),
             shape: BoxShape.circle,
           ),
         ),
         calendarBuilders: CalendarBuilders(
           defaultBuilder: (context, day, focusedDay) {
-            return Container(
-              margin: const EdgeInsets.all(4.0),
-              alignment: Alignment.center,
-              decoration: _markedDates[day] != null
-                  ? BoxDecoration(
-                      color: Color(0xFFFFE58B), shape: BoxShape.circle)
-                  : null,
-              child: Text(
-                '${day.day}',
-                style: TextStyle(
-                  color: _markedDates[day] != null
-                      ? Color(0xFFD03E00)
-                      : Colors.black,
+            return _buildCalendarDayContainer(day, false);
+          },
+          outsideBuilder: (context, day, focusedDay) {
+            return Stack(
+              children: [
+                _buildCalendarDayContainer(day, true),
+                Positioned.fill(
+                  child: Container(
+                    color: Colors.white.withOpacity(0.4),
+                  ),
                 ),
-              ),
+              ],
             );
           },
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCalendarDayContainer(DateTime day, bool isOutside) {
+    return Container(
+      margin: const EdgeInsets.all(4.0),
+      alignment: Alignment.center,
+      decoration: _markedDates[day] != null
+          ? const BoxDecoration(
+              color: Color(0xFFFFE58B), shape: BoxShape.circle)
+          : null,
+      child: Text(
+        '${day.day}',
+        style: TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.w500,
+          color: _markedDates[day] != null
+              ? const Color(0xFFD03E00)
+              : HexColor('#979797'),
         ),
       ),
     );
@@ -217,10 +245,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       child: ElevatedButton(
         child: Text(
           _isTodayLogExist ? '오늘의 생각을 이미 기록했어요' : '오늘의 3분 생각 시작!',
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+          style: TextStyle(
+              fontSize: 16, fontWeight: FontWeight.w700, color: Colors.white),
         ),
         style: ElevatedButton.styleFrom(
-          minimumSize: Size(double.infinity, 56),
+          backgroundColor: HexColor('#FD9800'),
+          minimumSize: const Size(double.infinity, 56),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),

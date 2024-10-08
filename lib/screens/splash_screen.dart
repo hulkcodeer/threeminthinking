@@ -94,14 +94,14 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
       body: Stack(
         children: [
           Center(
-            child: SvgPicture.asset('images/splash_center_logo.svg'),
+            child: SvgPicture.asset('assets/images/splash_center_logo.svg'),
           ),
           Positioned(
             left: 0,
             right: 0,
             bottom: 40,
             child: Center(
-              child: SvgPicture.asset('images/mixdrops_logo.svg'),
+              child: SvgPicture.asset('assets/images/mixdrops_logo.svg'),
             ),
           ),
         ],

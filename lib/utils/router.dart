@@ -1,7 +1,9 @@
 import 'package:go_router/go_router.dart';
-import 'package:flutter/material.dart';
+import 'package:threeminthinking/screens/history_screen.dart';
+
 import 'package:threeminthinking/screens/home_screen.dart';
 import 'package:threeminthinking/screens/splash_screen.dart';
+import 'package:threeminthinking/screens/think3min_screen.dart';
 
 final router = GoRouter(
   routes: [
@@ -13,12 +15,16 @@ final router = GoRouter(
       path: '/main',
       builder: (context, state) => const HomeScreen(),
     ),
-    // GoRoute(
-    //   path: '/history',
-    //   builder: (context, state) {
-    //     final date = state.queryParams['date'];
-    //     return HistoryScreen(date: date);
-    //   },
-    // ),
+    GoRoute(
+      path: '/think3min',
+      builder: (context, state) => Think3minScreen(),
+    ),
+    GoRoute(
+      path: '/history',
+      builder: (context, state) {
+        final date = state.uri.queryParameters['date'] ?? "";
+        return HistoryScreen(date: date);
+      },
+    ),
   ],
 );
