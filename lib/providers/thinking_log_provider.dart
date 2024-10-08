@@ -3,12 +3,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class ThinkingLog {
   final String id;
+  final String deviceId;
   final DateTime createdAt;
   final String thinkingDesc;
   final String dateDesc;
 
   ThinkingLog(
       {required this.id,
+      required this.deviceId,
       required this.createdAt,
       required this.thinkingDesc,
       required this.dateDesc});
@@ -16,6 +18,7 @@ class ThinkingLog {
   factory ThinkingLog.fromJson(Map<String, dynamic> json) {
     return ThinkingLog(
       id: json['id'],
+      deviceId: json['deviceId'],
       createdAt: DateTime.parse(json['createdAt']),
       thinkingDesc: json['thinkingDesc'],
       dateDesc: json['dateDesc'],
