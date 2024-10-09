@@ -19,7 +19,7 @@ final thinkingLogsProvider =
         (ref) => ThinkingLogsNotifier());
 
 class HomeScreen extends ConsumerStatefulWidget {
-  const HomeScreen({Key? key}) : super(key: key);
+  const HomeScreen({super.key});
 
   @override
   _HomeScreenState createState() => _HomeScreenState();
@@ -113,8 +113,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   Widget _buildHeader() {
     return Container(
-      padding: EdgeInsets.fromLTRB(20, 68, 20, 23),
-      color: Color(0xFFFFE58B),
+      padding: const EdgeInsets.fromLTRB(20, 68, 20, 23),
+      color: const Color(0xFFFFE58B),
       child: Row(
         children: [
           IconButton(
@@ -131,16 +131,17 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               children: [
                 Text(
                   DateFormat('yyyy년 M월').format(_focusedDay),
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+                  style: const TextStyle(
+                      fontSize: 18, fontWeight: FontWeight.w500),
                 ),
-                SizedBox(height: 25),
+                const SizedBox(height: 25),
                 Lottie.asset(
                   'assets/lotties/$_lottieFileName.json',
                   width: 120,
                   height: 120,
                 ),
-                SizedBox(height: 24),
-                Text(
+                const SizedBox(height: 24),
+                const Text(
                   '생각은 나중에..',
                   style: TextStyle(
                       fontSize: 18,
@@ -241,13 +242,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   Widget _buildButton() {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 20),
+      padding: const EdgeInsets.symmetric(horizontal: 20),
       child: ElevatedButton(
-        child: Text(
-          _isTodayLogExist ? '오늘의 생각을 이미 기록했어요' : '오늘의 3분 생각 시작!',
-          style: TextStyle(
-              fontSize: 16, fontWeight: FontWeight.w700, color: Colors.white),
-        ),
         style: ElevatedButton.styleFrom(
           backgroundColor: HexColor('#FD9800'),
           minimumSize: const Size(double.infinity, 56),
@@ -256,13 +252,18 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           ),
         ),
         onPressed: _isTodayLogExist ? null : () => context.push('/think3min'),
+        child: Text(
+          _isTodayLogExist ? '오늘의 생각을 이미 기록했어요' : '오늘의 3분 생각 시작!',
+          style: TextStyle(
+              fontSize: 16, fontWeight: FontWeight.w700, color: Colors.white),
+        ),
       ),
     );
   }
 
   Widget _buildAdBanner() {
     return Container(
-      margin: EdgeInsets.only(top: 20, bottom: 34),
+      margin: const EdgeInsets.only(top: 20, bottom: 34),
       width: double.infinity,
       height: 50,
       child: _bannerAd == null ? Container() : AdWidget(ad: _bannerAd!),
