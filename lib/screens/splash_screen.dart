@@ -74,7 +74,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
           {'deviceId': id}
         ]).select();
 
-        if (newUser != null && newUser.isNotEmpty) {
+        if (newUser.isNotEmpty) {
           ref
               .read(thinkingUserProvider.notifier)
               .setThinkingUser(ThinkingUser.fromJson(newUser[0]));

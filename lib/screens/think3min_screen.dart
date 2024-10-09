@@ -19,6 +19,8 @@ final thinkingLogsProvider =
         (ref) => ThinkingLogsNotifier());
 
 class Think3minScreen extends ConsumerStatefulWidget {
+  const Think3minScreen({super.key});
+
   @override
   _Think3minScreenState createState() => _Think3minScreenState();
 }
@@ -69,7 +71,7 @@ class _Think3minScreenState extends ConsumerState<Think3minScreen>
   }
 
   void startTimer() {
-    timer = Timer.periodic(Duration(seconds: 1), (timer) {
+    timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       setState(() {
         if (timeLeft > 0) {
           timeLeft--;
@@ -211,13 +213,13 @@ class _Think3minScreenState extends ConsumerState<Think3minScreen>
               child: TextField(
                 maxLines: null,
                 expands: true,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   hintText: "오늘의 3분 생각!",
                   hintStyle: TextStyle(color: Colors.grey),
                   border: InputBorder.none,
                   contentPadding: EdgeInsets.all(20),
                 ),
-                style: TextStyle(
+                style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w500,
                     fontFamily: 'Pretendard'),
@@ -235,7 +237,7 @@ class _Think3minScreenState extends ConsumerState<Think3minScreen>
   }
 
   Widget buildHeader() {
-    return Container(
+    return SizedBox(
       height: 48,
       child: Stack(
         children: [
@@ -250,10 +252,10 @@ class _Think3minScreenState extends ConsumerState<Think3minScreen>
                   height: 24,
                   animate: isTimerRunning,
                 ),
-                SizedBox(width: 8),
+                const SizedBox(width: 8),
                 Text(
                   '${timeLeft ~/ 60}:${(timeLeft % 60).toString().padLeft(2, '0')}',
-                  style: TextStyle(
+                  style: const TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.w500,
                       fontFamily: 'Pretendard'),
@@ -275,10 +277,10 @@ class _Think3minScreenState extends ConsumerState<Think3minScreen>
 
   Widget buildHintContainer() {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      margin: EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
-        color: Color(0xFFFFE58B),
+        color: const Color(0xFFFFE58B),
         borderRadius: BorderRadius.circular(20),
       ),
       child: Row(
@@ -287,14 +289,14 @@ class _Think3minScreenState extends ConsumerState<Think3minScreen>
           Flexible(
             child: Text(
               currentHint,
-              style: TextStyle(
+              style: const TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.w500,
                   color: Color(0xFFD03E00),
                   fontFamily: 'Pretendard'),
             ),
           ),
-          SizedBox(width: 8),
+          const SizedBox(width: 8),
           GestureDetector(
             onTap: () => setState(() => showHint = false),
             child: Image.asset('assets/images/hint_close.png',
@@ -308,7 +310,7 @@ class _Think3minScreenState extends ConsumerState<Think3minScreen>
   Widget buildStartModal() {
     return buildModal(
       title: "3분 생각 시작",
-      content: Column(
+      content: const Column(
         children: [
           Text("자유롭게 생각을 기록해보세요."),
           Text("만약 무슨 생각을 기록할지 막막하다면"),
@@ -323,7 +325,7 @@ class _Think3minScreenState extends ConsumerState<Think3minScreen>
   Widget buildEndModal() {
     return buildModal(
       title: "3분 생각",
-      content: Column(
+      content: const Column(
         children: [
           Text("너무 좋은 생각이에요."),
           Text("오늘 당신은 열심히 생각한 사람!"),
@@ -342,7 +344,7 @@ class _Think3minScreenState extends ConsumerState<Think3minScreen>
       child: Center(
         child: Container(
           width: MediaQuery.of(context).size.width * 0.8,
-          padding: EdgeInsets.all(16),
+          padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(16),
@@ -351,25 +353,25 @@ class _Think3minScreenState extends ConsumerState<Think3minScreen>
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(title,
-                  style: TextStyle(
+                  style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                       fontFamily: 'Pretendard')),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               DefaultTextStyle(
-                style: TextStyle(fontFamily: 'Pretendard'),
+                style: const TextStyle(fontFamily: 'Pretendard'),
                 child: content,
               ),
-              SizedBox(height: 24),
+              const SizedBox(height: 24),
               ElevatedButton(
-                child: Text("확인"),
                 onPressed: onConfirm,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: HexColor('#FD9800'),
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(11)),
-                  minimumSize: Size(double.infinity, 44),
+                  minimumSize: const Size(double.infinity, 44),
                 ),
+                child: Text("확인"),
               ),
             ],
           ),

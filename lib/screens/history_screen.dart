@@ -15,7 +15,7 @@ final thinkingLogsProvider =
 class HistoryScreen extends ConsumerWidget {
   final String date;
 
-  const HistoryScreen({Key? key, required this.date}) : super(key: key);
+  const HistoryScreen({super.key, required this.date});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -49,7 +49,7 @@ class HistoryScreen extends ConsumerWidget {
                   children: [
                     Text(
                       formattedDate,
-                      style: TextStyle(
+                      style: const TextStyle(
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
                           fontFamily: 'Pretendard'),
@@ -57,14 +57,14 @@ class HistoryScreen extends ConsumerWidget {
                     Positioned(
                       left: 10,
                       child: IconButton(
-                        icon: Image.asset('assets/images/ic_navClose.png'),
+                        icon: Image.asset('assets/images/ic_navClose.svg'),
                         onPressed: () => context.pop(),
                       ),
                     ),
                     Positioned(
                       right: 18,
                       child: IconButton(
-                        icon: Image.asset('assets/images/ic_share.png'),
+                        icon: Image.asset('assets/images/ic_share.svg'),
                         onPressed: () {
                           // 공유 기능 구현
                         },
@@ -80,12 +80,12 @@ class HistoryScreen extends ConsumerWidget {
                           padding: const EdgeInsets.symmetric(vertical: 20),
                           child: Text(
                             selectedDateLog.thinkingDesc,
-                            style: TextStyle(
+                            style: const TextStyle(
                                 fontSize: 16, fontFamily: 'Pretendard'),
                           ),
                         )
-                      : Padding(
-                          padding: const EdgeInsets.only(top: 20),
+                      : const Padding(
+                          padding: EdgeInsets.only(top: 20),
                           child: Text(
                             '이 날의 생각이 없습니다.',
                             style: TextStyle(
