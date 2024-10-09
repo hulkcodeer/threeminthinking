@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -25,7 +26,7 @@ class HistoryScreen extends ConsumerWidget {
     final selectedDateLog = thinkingLogs.firstWhere(
       (log) => log.dateDesc == date,
       orElse: () => ThinkingLog(
-          id: '',
+          id: 0,
           deviceId: '',
           createdAt: DateTime.now(),
           thinkingDesc: '',
@@ -37,68 +38,67 @@ class HistoryScreen extends ConsumerWidget {
         : "날짜 없음";
 
     return Scaffold(
+      backgroundColor: Colors.white,
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: Column(
-            children: [
-              SizedBox(
-                height: 48,
-                child: Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    Text(
-                      formattedDate,
-                      style: const TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                          fontFamily: 'Pretendard'),
+        child: Column(
+          children: [
+            SizedBox(
+              width: double.infinity,
+              height: 48,
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  Text(
+                    formattedDate,
+                    style: const TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: 'Pretendard'),
+                  ),
+                  Positioned(
+                    left: 10,
+                    child: IconButton(
+                      icon: SvgPicture.asset('assets/images/ic_navClose.svg'),
+                      onPressed: () => context.pop(),
                     ),
-                    Positioned(
-                      left: 10,
-                      child: IconButton(
-                        icon: Image.asset('assets/images/ic_navClose.svg'),
-                        onPressed: () => context.pop(),
-                      ),
+                  ),
+                  Positioned(
+                    right: 18,
+                    child: IconButton(
+                      icon: SvgPicture.asset('assets/images/ic_share.svg'),
+                      onPressed: () {
+                        // 공유 기능 구현
+                      },
                     ),
-                    Positioned(
-                      right: 18,
-                      child: IconButton(
-                        icon: Image.asset('assets/images/ic_share.svg'),
-                        onPressed: () {
-                          // 공유 기능 구현
-                        },
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-              Expanded(
-                child: SingleChildScrollView(
-                  child: selectedDateLog.thinkingDesc.isNotEmpty
-                      ? Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 20),
-                          child: Text(
-                            selectedDateLog.thinkingDesc,
-                            style: const TextStyle(
-                                fontSize: 16, fontFamily: 'Pretendard'),
-                          ),
-                        )
-                      : const Padding(
-                          padding: EdgeInsets.only(top: 20),
-                          child: Text(
-                            '이 날의 생각이 없습니다.',
-                            style: TextStyle(
-                                fontSize: 16,
-                                color: Colors.grey,
-                                fontFamily: 'Pretendard'),
-                            textAlign: TextAlign.center,
-                          ),
+            ),
+            Expanded(
+              child: SingleChildScrollView(
+                child: selectedDateLog.thinkingDesc.isNotEmpty
+                    ? Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 20),
+                        child: Text(
+                          selectedDateLog.thinkingDesc,
+                          style: const TextStyle(
+                              fontSize: 16, fontFamily: 'Pretendard'),
                         ),
-                ),
+                      )
+                    : const Padding(
+                        padding: EdgeInsets.only(top: 20),
+                        child: Text(
+                          '이 날의 생각이 없습니다.',
+                          style: TextStyle(
+                              fontSize: 16,
+                              color: Colors.grey,
+                              fontFamily: 'Pretendard'),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

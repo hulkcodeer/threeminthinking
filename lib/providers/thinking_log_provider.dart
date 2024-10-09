@@ -2,7 +2,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class ThinkingLog {
-  final String id;
+  final int id;
   final String deviceId;
   final DateTime createdAt;
   final String thinkingDesc;

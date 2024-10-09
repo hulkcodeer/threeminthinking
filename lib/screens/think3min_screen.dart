@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:lottie/lottie.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -205,33 +206,61 @@ class _Think3minScreenState extends ConsumerState<Think3minScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: Column(
-          children: [
-            buildHeader(),
-            Expanded(
-              child: TextField(
-                maxLines: null,
-                expands: true,
-                decoration: const InputDecoration(
-                  hintText: "오늘의 3분 생각!",
-                  hintStyle: TextStyle(color: Colors.grey),
-                  border: InputBorder.none,
-                  contentPadding: EdgeInsets.all(20),
+      backgroundColor: Colors.white,
+      body: Stack(
+        // SafeArea를 제거하고 Stack으로 변경
+        children: [
+          SafeArea(
+            child: Column(
+              children: [
+                buildHeader(),
+                Expanded(
+                  child: TextField(
+                    maxLines: null,
+                    expands: true,
+                    decoration: const InputDecoration(
+                      hintText: "오늘의 3분 생각!",
+                      hintStyle: TextStyle(color: Colors.grey),
+                      border: InputBorder.none,
+                      contentPadding: EdgeInsets.all(20),
+                    ),
+                    style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w500,
+                        fontFamily: 'Pretendard'),
+                    onChanged: (value) => setState(() => thinkingDesc = value),
+                    enabled: isEditable,
+                  ),
                 ),
-                style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w500,
-                    fontFamily: 'Pretendard'),
-                onChanged: (value) => setState(() => thinkingDesc = value),
-                enabled: isEditable,
-              ),
+              ],
             ),
-            if (showHint) buildHintContainer(),
-            if (showStartModal) buildStartModal(),
-            if (showEndModal) buildEndModal(),
-          ],
-        ),
+          ),
+          if (showHint) buildHintContainer(),
+          if (showStartModal)
+            buildModal(
+              title: "3분 생각 시작",
+              content: const Column(
+                children: [
+                  Text("자유롭게 생각을 기록해보세요."),
+                  Text("만약 무슨 생각을 기록할지 막막하다면"),
+                  Text("오른쪽 상단의 힌트 아이콘💡을 눌러"),
+                  Text("힌트를 얻어보세요."),
+                ],
+              ),
+              onConfirm: handleStartConfirm,
+            ),
+          if (showEndModal)
+            buildModal(
+              title: "3분 생각",
+              content: const Column(
+                children: [
+                  Text("너무 좋은 생각이에요."),
+                  Text("오늘 당신은 열심히 생각한 사람!"),
+                ],
+              ),
+              onConfirm: handleEndConfirm,
+            ),
+        ],
       ),
     );
   }
@@ -266,7 +295,7 @@ class _Think3minScreenState extends ConsumerState<Think3minScreen>
           Positioned(
             right: 12,
             child: IconButton(
-              icon: Image.asset('assets/images/lightbulb_flash_fill.png'),
+              icon: SvgPicture.asset('assets/images/lightbulb_flash_fill.svg'),
               onPressed: handleHintPress,
             ),
           ),
@@ -354,12 +383,15 @@ class _Think3minScreenState extends ConsumerState<Think3minScreen>
             children: [
               Text(title,
                   style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      fontFamily: 'Pretendard')),
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700,
+                  )),
               const SizedBox(height: 10),
               DefaultTextStyle(
-                style: const TextStyle(fontFamily: 'Pretendard'),
+                style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.black),
                 child: content,
               ),
               const SizedBox(height: 24),
@@ -371,7 +403,13 @@ class _Think3minScreenState extends ConsumerState<Think3minScreen>
                       borderRadius: BorderRadius.circular(11)),
                   minimumSize: const Size(double.infinity, 44),
                 ),
-                child: Text("확인"),
+                child: const Text(
+                  "확인",
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700),
+                ),
               ),
             ],
           ),
