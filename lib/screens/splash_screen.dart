@@ -47,6 +47,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
   }
 
   Future<bool> _sendDeviceIdToServer(String id) async {
+    print('id : $id');
     final supabase = Supabase.instance.client;
     try {
       final response = await supabase
