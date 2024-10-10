@@ -37,17 +37,23 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
   Future<void> _initialize() async {
     await Future.delayed(const Duration(seconds: 2));
     var deviceId = await getDeviceUniqueId();
+
     if (await _sendDeviceIdToServer(deviceId)) {
       if (mounted) {
         context.go('/main');
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Mounted Else')),
+        );
       }
     } else {
-      // 오류 처리
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('_sendDeviceIdToServer error')),
+      );
     }
   }
 
   Future<bool> _sendDeviceIdToServer(String id) async {
-    print('id : $id');
     final supabase = Supabase.instance.client;
     try {
       final response = await supabase
@@ -55,6 +61,10 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
           .select('id, deviceId, createdAt, updatedAt')
           .eq('deviceId', id)
           .maybeSingle();
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('response: $response')),
+      );
 
       if (response != null) {
         ref
@@ -66,14 +76,22 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
             .select('id, createdAt, thinkingDesc, dateDesc')
             .eq('deviceId', response['deviceId']);
 
-        ref.read(thinkingLogsProvider.notifier).setThinkingLogs(
-            (thinkingData as List)
-                .map((item) => ThinkingLog.fromJson(item))
-                .toList());
+        if (thinkingData != null &&
+            thinkingData is List &&
+            thinkingData.isNotEmpty) {
+          ref.read(thinkingLogsProvider.notifier).setThinkingLogs(
+              thinkingData.map((item) => ThinkingLog.fromJson(item)).toList());
+        } else {
+          ref.read(thinkingLogsProvider.notifier).setThinkingLogs([]);
+        }
       } else {
         final newUser = await supabase.from('users').insert([
           {'deviceId': id}
         ]).select();
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('newUser: $newUser')),
+        );
 
         if (newUser.isNotEmpty) {
           ref
@@ -83,7 +101,9 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
       }
       return true; // 모든 작업이 성공적으로 완료되면 true 반환
     } catch (error) {
-      print('예상치 못한 오류 발생: $error');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('예상치 못한 오류 발생: $error')),
+      );
       return false; // 오류 발생 시 false 반환
     }
   }
