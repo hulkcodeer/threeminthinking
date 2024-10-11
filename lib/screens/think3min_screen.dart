@@ -7,17 +7,9 @@ import 'package:lottie/lottie.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:go_router/go_router.dart';
 import 'package:threeminthinking/providers/thinking_log_provider.dart';
-import 'package:threeminthinking/providers/user_provider.dart';
+import 'package:threeminthinking/screens/history_screen.dart';
+import 'package:threeminthinking/screens/splash_screen.dart';
 import 'package:threeminthinking/utils/hexcolor.dart';
-
-// 사용자 상태 관리를 위한 프로바이더
-final thinkingUserProvider =
-    StateNotifierProvider<UserNotifier, ThinkingUser?>((ref) => UserNotifier());
-
-// 생각 로그 상태 관리를 위한 프로바이더
-final thinkingLogsProvider =
-    StateNotifierProvider<ThinkingLogsNotifier, List<ThinkingLog>>(
-        (ref) => ThinkingLogsNotifier());
 
 class Think3minScreen extends ConsumerStatefulWidget {
   const Think3minScreen({super.key});
@@ -28,7 +20,7 @@ class Think3minScreen extends ConsumerStatefulWidget {
 
 class _Think3minScreenState extends ConsumerState<Think3minScreen>
     with WidgetsBindingObserver {
-  static const int THINKING_TIME = 180;
+  static const int THINKING_TIME = 10;
   int timeLeft = THINKING_TIME;
   bool showStartModal = true;
   bool showEndModal = false;
@@ -44,7 +36,37 @@ class _Think3minScreenState extends ConsumerState<Think3minScreen>
   List<String> hints = [
     "💡 오늘의 순간에서 영감을 받은 아이디어는 무엇일까?",
     "💡 내가 좋아하는 주제에 대해 세 가지 생각해보자.",
-    // ... 나머지 힌트들 ...
+    "💡 내일의 나에게 주고 싶은 조언은 무엇일까?",
+    "💡 지금 가장 궁금한 것은 무엇인지 적어보자.",
+    "💡 내가 해결하고 싶은 문제는 어떤 것이 있을까?",
+    "💡 오늘의 작은 행복은 무엇이었을까?",
+    "💡 내가 배운 가장 중요한 교훈은 무엇일까?",
+    "💡 최근에 읽은 책이나 기사에서 떠오른 아이디어는?",
+    "💡 내가 하고 싶은 취미나 프로젝트는 어떤 것들이 있을까?",
+    "💡 친절이란 무엇일까?",
+    "💡 내가 만난 사람 중 가장 인상 깊었던 사람은 누구일까?",
+    "💡 내가 자연에서 가장 좋아하는 부분은 무엇일까?",
+    "💡 나의 가장 독창적인 점은 무엇일까?",
+    "💡 내가 상상하는 미래의 모습은 어떤 것일까?",
+    "💡 주변에서 보이는 사소한 것들에서 발견한 아이디어는?",
+    "💡 내가 좋아하는 노래에서 얻은 영감은?",
+    "💡 최근의 대화 중 기억에 남는 한마디는 무엇인가?",
+    "💡 내가 바라는 세상은 어떤 모습일까?",
+    "💡 일상 속에서 반복되는 패턴에서 발견할 수 있는 것은?",
+    "💡 오늘 내가 할수 있는 가장 작은 도전은 무엇일까?",
+    "💡 나의 꿈은 무엇이며, 그에 대한 계획은?",
+    "💡 내가 존경하는 인물에게 배우고 싶은 점은?",
+    "💡 오늘 아침부터 지금까지 불편함을 느낀 순간은?",
+    "💡 가장 좋아하는 장소에서 느낀 감정은?",
+    "💡 소중한 사람에게 전하고 싶은 메시지는 무엇일까?",
+    "💡 과거의 나에게 해주고 싶은 조언은?",
+    "💡 새로운 기술이나 트렌드에서 떠오르는 아이디어는?",
+    "💡 내가 상상하는 완벽한 하루는 어떤 모습일까?",
+    "💡 세상에 긍정적인 영향을 미칠 수 있는 방법은?",
+    "💡 나에게 낭만이란 무엇일까?",
+    "💡 내가 가장 양보할 수 없는 것은?",
+    "💡 내가 가장 좋아하는 음식과 그 이유는?",
+    "💡 공평함이란 무엇일까?",
   ];
 
   @override
@@ -160,7 +182,13 @@ class _Think3minScreenState extends ConsumerState<Think3minScreen>
 
     final today = DateTime.now().toIso8601String().split('T')[0];
     final user = ref.read(thinkingUserProvider);
+    print('user.deviceId: ${user?.deviceId}');
 
+    final user2 = ref.read(thinkingUserProvider.notifier).state;
+    print('user2: ${user2?.deviceId}');
+
+    final user3 = ref.watch(thinkingUserProvider);
+    print('user3: ${user3?.deviceId}');
     try {
       final response = await supabase
           .from('thinkingLog')
@@ -172,11 +200,13 @@ class _Think3minScreenState extends ConsumerState<Think3minScreen>
           .select()
           .single();
 
+      print('response: $response');
+
       // 새로운 ThinkingLog를 생성하고 provider에 추가
       final newLog = ThinkingLog(
         id: response['id'],
         deviceId: user?.deviceId ?? 'unknown',
-        createdAt: DateTime.parse(response['created_at']),
+        createdAt: DateTime.parse(response['createdAt']),
         thinkingDesc: response['thinkingDesc'],
         dateDesc: response['dateDesc'],
       );
@@ -208,7 +238,6 @@ class _Think3minScreenState extends ConsumerState<Think3minScreen>
     return Scaffold(
       backgroundColor: Colors.white,
       body: Stack(
-        // SafeArea를 제거하고 Stack으로 변경
         children: [
           SafeArea(
             child: Column(
@@ -218,6 +247,7 @@ class _Think3minScreenState extends ConsumerState<Think3minScreen>
                   child: TextField(
                     maxLines: null,
                     expands: true,
+                    textAlign: TextAlign.start,
                     decoration: const InputDecoration(
                       hintText: "오늘의 3분 생각!",
                       hintStyle: TextStyle(color: Colors.grey),
@@ -305,33 +335,44 @@ class _Think3minScreenState extends ConsumerState<Think3minScreen>
   }
 
   Widget buildHintContainer() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      margin: const EdgeInsets.only(bottom: 16),
-      decoration: BoxDecoration(
-        color: const Color(0xFFFFE58B),
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Flexible(
-            child: Text(
-              currentHint,
-              style: const TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w500,
-                  color: Color(0xFFD03E00),
-                  fontFamily: 'Pretendard'),
+    final bottomPadding = MediaQuery.of(context).viewInsets.bottom > 0
+        ? MediaQuery.of(context).viewInsets.bottom + 16
+        : 16;
+
+    return AnimatedPositioned(
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+      bottom: bottomPadding.toDouble(),
+      left: 16,
+      right: 16,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        margin: const EdgeInsets.only(bottom: 16),
+        decoration: BoxDecoration(
+          color: const Color(0xFFFFE58B),
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Flexible(
+              child: Text(
+                currentHint,
+                style: const TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w500,
+                    color: Color(0xFFD03E00),
+                    fontFamily: 'Pretendard'),
+              ),
             ),
-          ),
-          const SizedBox(width: 8),
-          GestureDetector(
-            onTap: () => setState(() => showHint = false),
-            child: Image.asset('assets/images/hint_close.png',
-                width: 16, height: 16),
-          ),
-        ],
+            const SizedBox(width: 8),
+            GestureDetector(
+              onTap: () => setState(() => showHint = false),
+              child: SvgPicture.asset('assets/images/hint_close.svg',
+                  width: 16, height: 16),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -369,7 +410,7 @@ class _Think3minScreenState extends ConsumerState<Think3minScreen>
       required Widget content,
       required VoidCallback onConfirm}) {
     return Container(
-      color: Colors.black54,
+      color: Colors.black.withOpacity(0.3),
       child: Center(
         child: Container(
           width: MediaQuery.of(context).size.width * 0.8,
