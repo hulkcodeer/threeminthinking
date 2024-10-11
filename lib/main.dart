@@ -1,21 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:threeminthinking/utils/router.dart';
 
-const supabaseUrl = "https://wjaqumbqygvvswbttpkn.supabase.co";
-const supabaseAnonKey =
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndqYXF1bWJxeWd2dnN3YnR0cGtuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mjc2OTkxNzcsImV4cCI6MjA0MzI3NTE3N30.QANpJ5i0a9--SRdtRLT2fz2jY0yL5ATjfD6k0l5-aG4";
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  dotenv.load(fileName: '.env');
 
   MobileAds.instance.initialize();
 
   await Supabase.initialize(
-    url: supabaseUrl,
-    anonKey: supabaseAnonKey,
+    url: dotenv.env['SUPABASE_URL']!,
+    anonKey: dotenv.env['SUPABASE_ANON_KEY']!,
   );
 
   runApp(const ProviderScope(child: MyApp()));
