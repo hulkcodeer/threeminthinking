@@ -1,29 +1,23 @@
 // ThinkingLog 모델 클래스
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter/foundation.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 
-class ThinkingLog {
-  final int id;
-  final String deviceId;
-  final DateTime createdAt;
-  final String thinkingDesc;
-  final String dateDesc;
+part 'thinking_log_provider.freezed.dart';
+part 'thinking_log_provider.g.dart';
 
-  ThinkingLog(
-      {required this.id,
-      required this.deviceId,
-      required this.createdAt,
-      required this.thinkingDesc,
-      required this.dateDesc});
+@freezed
+class ThinkingLog with _$ThinkingLog {
+  const factory ThinkingLog({
+    required int id,
+    required String deviceId,
+    required DateTime createdAt,
+    required String thinkingDesc,
+    required String dateDesc,
+  }) = _ThinkingLog;
 
-  factory ThinkingLog.fromJson(Map<String, dynamic> json) {
-    return ThinkingLog(
-      id: json['id'],
-      deviceId: json['deviceId'],
-      createdAt: DateTime.parse(json['createdAt']),
-      thinkingDesc: json['thinkingDesc'],
-      dateDesc: json['dateDesc'],
-    );
-  }
+  factory ThinkingLog.fromJson(Map<String, dynamic> json) =>
+      _$ThinkingLogFromJson(json);
 }
 
 // ThinkingLog 상태 관리를 위한 Notifier

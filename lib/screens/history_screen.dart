@@ -4,14 +4,9 @@ import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:threeminthinking/providers/user_provider.dart';
+import 'package:threeminthinking/screens/home_screen.dart';
+import 'package:threeminthinking/screens/splash_screen.dart';
 import '../providers/thinking_log_provider.dart';
-
-// Riverpod 프로바이더 정의
-final userProvider =
-    StateNotifierProvider<UserNotifier, ThinkingUser?>((ref) => UserNotifier());
-final thinkingLogsProvider =
-    StateNotifierProvider<ThinkingLogsNotifier, List<ThinkingLog>>(
-        (ref) => ThinkingLogsNotifier());
 
 class HistoryScreen extends ConsumerWidget {
   final String date;

@@ -5,18 +5,12 @@ import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:threeminthinking/screens/splash_screen.dart';
 import 'package:threeminthinking/utils/ad_helper.dart';
 import 'package:threeminthinking/utils/hexcolor.dart';
 import '../providers/user_provider.dart';
 import '../providers/thinking_log_provider.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
-
-// Riverpod 프로바이더 정의
-final userProvider =
-    StateNotifierProvider<UserNotifier, ThinkingUser?>((ref) => UserNotifier());
-final thinkingLogsProvider =
-    StateNotifierProvider<ThinkingLogsNotifier, List<ThinkingLog>>(
-        (ref) => ThinkingLogsNotifier());
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -67,9 +61,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   void _updateMarkedDates() {
     final logs = ref.read(thinkingLogsProvider);
-
     setState(() {
-      _markedDates = {for (var log in logs) DateTime.parse(log.dateDesc): true};
+      _markedDates = {
+        for (var log in logs)
+          DateTime(
+            DateTime.parse(log.dateDesc).year,
+            DateTime.parse(log.dateDesc).month,
+            DateTime.parse(log.dateDesc).day,
+          ): true
+      };
 
       final currentMonth = DateFormat('yyyy-MM').format(_focusedDay);
       final currentMonthLogs = logs
@@ -95,8 +95,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final thinkingLogs = ref.watch(thinkingLogsProvider);
-
     return Scaffold(
       backgroundColor: HexColor('#FFFFFFFF'),
       body: Column(
@@ -179,33 +177,23 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           context.push('/history?date=${DateFormat('yyyy-MM-dd').format(day)}');
         },
         calendarStyle: CalendarStyle(
-          selectedDecoration: const BoxDecoration(
-            color: Color(0xFFFFE58B),
+          // 기존 스타일 설정 유지
+          // 오늘 날짜의 기본 스타일을 비활성화
+          todayDecoration: const BoxDecoration(
             shape: BoxShape.circle,
+            color: Colors.transparent,
           ),
           todayTextStyle: const TextStyle(
-            color: Colors.black,
-            fontSize: 16,
-            fontWeight: FontWeight.w700,
-          ),
-          todayDecoration: BoxDecoration(
-            color: Colors.transparent,
-            shape: BoxShape.circle,
-            border: Border.all(color: Colors.transparent, width: 0),
-          ),
-          markerDecoration: const BoxDecoration(
-            color: Color(0xFFFFE58B),
-            shape: BoxShape.circle,
-          ),
+              color: Colors.black, fontSize: 16, fontWeight: FontWeight.w700),
         ),
         calendarBuilders: CalendarBuilders(
           defaultBuilder: (context, day, focusedDay) {
-            return _buildCalendarDayContainer(day, false);
+            return _buildCalendarDayContainer(day, false, false);
           },
           outsideBuilder: (context, day, focusedDay) {
             return Stack(
               children: [
-                _buildCalendarDayContainer(day, true),
+                _buildCalendarDayContainer(day, true, false),
                 Positioned.fill(
                   child: Container(
                     color: Colors.white.withOpacity(0.4),
@@ -214,27 +202,46 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               ],
             );
           },
+          todayBuilder: (context, day, focusedDay) {
+            return _buildCalendarDayContainer(day, false, true);
+          },
+          markerBuilder: (context, day, events) {
+            // 마커 빌더는 더 이상 필요하지 않으므로 null 반환
+            return null;
+          },
         ),
       ),
     );
   }
 
-  Widget _buildCalendarDayContainer(DateTime day, bool isOutside) {
+  Widget _buildCalendarDayContainer(
+      DateTime day, bool isOutside, bool isToday) {
+    bool isMarked = _markedDates.keys.any((date) =>
+        date.year == day.year &&
+        date.month == day.month &&
+        date.day == day.day);
+
     return Container(
       margin: const EdgeInsets.all(4.0),
       alignment: Alignment.center,
-      decoration: _markedDates[day] != null
-          ? const BoxDecoration(
-              color: Color(0xFFFFE58B), shape: BoxShape.circle)
+      decoration: isMarked || isToday
+          ? BoxDecoration(
+              color: const Color(0xFFFFE58B),
+              shape: BoxShape.circle,
+            )
           : null,
       child: Text(
         '${day.day}',
         style: TextStyle(
           fontSize: 16,
-          fontWeight: FontWeight.w500,
-          color: _markedDates[day] != null
-              ? const Color(0xFFD03E00)
-              : HexColor('#979797'),
+          fontWeight: isToday ? FontWeight.w700 : FontWeight.w500,
+          color: isToday
+              ? Colors.black
+              : isMarked
+                  ? const Color(0xFFD03E00)
+                  : (isOutside
+                      ? HexColor('#979797').withOpacity(0.5)
+                      : HexColor('#979797')),
         ),
       ),
     );

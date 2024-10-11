@@ -41,15 +41,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
     if (await _sendDeviceIdToServer(deviceId)) {
       if (mounted) {
         context.go('/main');
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Mounted Else')),
-        );
       }
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('_sendDeviceIdToServer error')),
-      );
     }
   }
 
@@ -62,23 +54,21 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
           .eq('deviceId', id)
           .maybeSingle();
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('response: $response')),
-      );
-
       if (response != null) {
+        print('response: $response');
         ref
             .read(thinkingUserProvider.notifier)
             .setThinkingUser(ThinkingUser.fromJson(response));
 
+        final user = ref.watch(thinkingUserProvider)?.deviceId;
+        print('user: $user');
+
         final thinkingData = await supabase
             .from('thinkingLog')
-            .select('id, createdAt, thinkingDesc, dateDesc')
+            .select('id, createdAt, thinkingDesc, dateDesc, deviceId')
             .eq('deviceId', response['deviceId']);
 
-        if (thinkingData != null &&
-            thinkingData is List &&
-            thinkingData.isNotEmpty) {
+        if (thinkingData.isNotEmpty) {
           ref.read(thinkingLogsProvider.notifier).setThinkingLogs(
               thinkingData.map((item) => ThinkingLog.fromJson(item)).toList());
         } else {
@@ -89,10 +79,6 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
           {'deviceId': id}
         ]).select();
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('newUser: $newUser')),
-        );
-
         if (newUser.isNotEmpty) {
           ref
               .read(thinkingUserProvider.notifier)
@@ -101,9 +87,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
       }
       return true; // 모든 작업이 성공적으로 완료되면 true 반환
     } catch (error) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('예상치 못한 오류 발생: $error')),
-      );
+      print('예상치 못한 오류 발생: $error');
       return false; // 오류 발생 시 false 반환
     }
   }

@@ -7,13 +7,15 @@ import 'package:threeminthinking/utils/router.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  dotenv.load(fileName: '.env');
 
-  MobileAds.instance.initialize();
+  // Await dotenv.load to ensure environment variables are loaded
+  await dotenv.load(fileName: '.env');
+
+  await MobileAds.instance.initialize();
 
   await Supabase.initialize(
-    url: dotenv.env['SUPABASE_URL']!,
-    anonKey: dotenv.env['SUPABASE_ANON_KEY']!,
+    url: dotenv.get('SUPABASE_URL'),
+    anonKey: dotenv.get('SUPABASE_ANON_KEY'),
   );
 
   runApp(const ProviderScope(child: MyApp()));
