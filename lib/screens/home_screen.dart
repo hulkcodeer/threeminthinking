@@ -8,6 +8,7 @@ import 'package:go_router/go_router.dart';
 import 'package:threeminthinking/screens/splash_screen.dart';
 import 'package:threeminthinking/utils/ad_helper.dart';
 import 'package:threeminthinking/utils/hexcolor.dart';
+import 'package:threeminthinking/utils/router.dart';
 import '../providers/user_provider.dart';
 import '../providers/thinking_log_provider.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
@@ -176,7 +177,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         daysOfWeekVisible: false,
         selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
         onDaySelected: (day, focusedDay) {
-          context.push('/history?date=${DateFormat('yyyy-MM-dd').format(day)}');
+          router.push('/history?date=${DateFormat('yyyy-MM-dd').format(day)}');
         },
         calendarStyle: CalendarStyle(
           // 기존 스타일 설정 유지
