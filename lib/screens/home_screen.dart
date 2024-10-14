@@ -22,8 +22,8 @@ class HomeScreen extends ConsumerStatefulWidget {
 class _HomeScreenState extends ConsumerState<HomeScreen> {
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
-  Map<DateTime, bool> _markedDates = {};
   String _lottieFileName = 'face_1';
+  String _calendarTitle = '';
   bool _isTodayLogExist = false;
   BannerAd? _bannerAd;
 
@@ -60,17 +60,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   void _updateMarkedDates() {
-    final logs = ref.read(thinkingLogsProvider);
+    final logs = ref.read(thinkingLogsProvider); // Provider를 watch하여 변경 사항 감지
     setState(() {
-      _markedDates = {
-        for (var log in logs)
-          DateTime(
-            DateTime.parse(log.dateDesc).year,
-            DateTime.parse(log.dateDesc).month,
-            DateTime.parse(log.dateDesc).day,
-          ): true
-      };
-
       final currentMonth = DateFormat('yyyy-MM').format(_focusedDay);
       final currentMonthLogs = logs
           .where((log) =>
@@ -80,12 +71,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
       if (currentMonthLogs.length >= 20) {
         _lottieFileName = 'face_4';
+        _calendarTitle = '생각, 고로 존재';
       } else if (currentMonthLogs.length >= 10) {
         _lottieFileName = 'face_3';
+        _calendarTitle = '생각 하기를 즐기는 편';
       } else if (currentMonthLogs.length >= 4) {
         _lottieFileName = 'face_2';
+        _calendarTitle = '조금씩 생각해 보는 중';
       } else {
         _lottieFileName = 'face_1';
+        _calendarTitle = '생각은 나중에..';
       }
 
       final today = DateFormat('yyyy-MM-dd').format(DateTime.now());
@@ -95,12 +90,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final logs = ref.watch(thinkingLogsProvider); // build 메서드 내에서 watch 사용
+    print('logs: $logs');
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       backgroundColor: HexColor('#FFFFFFFF'),
       body: Column(
         children: [
           _buildHeader(),
-          _buildCalendar(),
+          _buildCalendar(logs),
           const Spacer(),
           _buildButton(),
           _buildAdBanner(),
@@ -139,9 +137,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   height: 120,
                 ),
                 const SizedBox(height: 24),
-                const Text(
-                  '생각은 나중에..',
-                  style: TextStyle(
+                Text(
+                  '${_calendarTitle}',
+                  style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w700,
                       color: Color(0xFFD03E00)),
@@ -163,7 +161,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     );
   }
 
-  Widget _buildCalendar() {
+  Widget _buildCalendar(List<ThinkingLog> logs) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(43, 30, 43, 32),
       child: TableCalendar(
@@ -216,7 +214,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   Widget _buildCalendarDayContainer(
       DateTime day, bool isOutside, bool isToday) {
-    bool isMarked = _markedDates.keys.any((date) =>
+    final logs = ref.watch(thinkingLogsProvider);
+    final markedDates = {
+      for (var log in logs)
+        DateTime(
+          DateTime.parse(log.dateDesc).year,
+          DateTime.parse(log.dateDesc).month,
+          DateTime.parse(log.dateDesc).day,
+        ): true
+    };
+    bool isMarked = markedDates.keys.any((date) =>
         date.year == day.year &&
         date.month == day.month &&
         date.day == day.day);
@@ -224,9 +231,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     return Container(
       margin: const EdgeInsets.all(4.0),
       alignment: Alignment.center,
-      decoration: isMarked || isToday
+      decoration: isMarked
           ? BoxDecoration(
-              color: const Color(0xFFFFE58B),
+              color: HexColor('#FFFFE58B'),
               shape: BoxShape.circle,
             )
           : null,
@@ -248,6 +255,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   Widget _buildButton() {
+    final logs = ref.watch(thinkingLogsProvider);
+    final today = DateFormat('yyyy-MM-dd').format(DateTime.now());
+    _isTodayLogExist = logs.any((log) => log.dateDesc == today);
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: ElevatedButton(
@@ -261,7 +272,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         onPressed: _isTodayLogExist ? null : () => context.push('/think3min'),
         child: Text(
           _isTodayLogExist ? '오늘의 생각을 이미 기록했어요' : '오늘의 3분 생각 시작!',
-          style: TextStyle(
+          style: const TextStyle(
               fontSize: 16, fontWeight: FontWeight.w700, color: Colors.white),
         ),
       ),

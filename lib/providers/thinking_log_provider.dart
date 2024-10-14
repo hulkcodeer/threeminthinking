@@ -24,5 +24,5 @@ class ThinkingLog with _$ThinkingLog {
 class ThinkingLogsNotifier extends StateNotifier<List<ThinkingLog>> {
   ThinkingLogsNotifier() : super([]);
 
-  void setThinkingLogs(List<ThinkingLog> logs) => state = logs;
+  void setThinkingLogs(List<ThinkingLog> logs) => state = [...state, ...logs];
 }

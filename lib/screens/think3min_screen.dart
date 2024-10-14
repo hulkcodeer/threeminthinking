@@ -10,6 +10,7 @@ import 'package:threeminthinking/providers/thinking_log_provider.dart';
 import 'package:threeminthinking/screens/history_screen.dart';
 import 'package:threeminthinking/screens/splash_screen.dart';
 import 'package:threeminthinking/utils/hexcolor.dart';
+import 'package:threeminthinking/utils/router.dart';
 
 class Think3minScreen extends ConsumerStatefulWidget {
   const Think3minScreen({super.key});
@@ -50,8 +51,8 @@ class _Think3minScreenState extends ConsumerState<Think3minScreen>
     "💡 내가 상상하는 미래의 모습은 어떤 것일까?",
     "💡 주변에서 보이는 사소한 것들에서 발견한 아이디어는?",
     "💡 내가 좋아하는 노래에서 얻은 영감은?",
-    "💡 최근의 대화 중 기억에 남는 한마디는 무엇인가?",
-    "💡 내가 바라는 세상은 어떤 모습일까?",
+    "💡 최근의 대화 중 기억에 남는 한마디는 무엇인?",
+    "💡 내가 는 세상은 어떤 모습일까?",
     "💡 일상 속에서 반복되는 패턴에서 발견할 수 있는 것은?",
     "💡 오늘 내가 할수 있는 가장 작은 도전은 무엇일까?",
     "💡 나의 꿈은 무엇이며, 그에 대한 계획은?",
@@ -176,19 +177,13 @@ class _Think3minScreenState extends ConsumerState<Think3minScreen>
   Future<void> handleEndConfirm() async {
     if (thinkingDesc.isEmpty) {
       await clearSavedState();
-      context.pop();
+      router.pop();
       return;
     }
 
     final today = DateTime.now().toIso8601String().split('T')[0];
     final user = ref.read(thinkingUserProvider);
-    print('user.deviceId: ${user?.deviceId}');
 
-    final user2 = ref.read(thinkingUserProvider.notifier).state;
-    print('user2: ${user2?.deviceId}');
-
-    final user3 = ref.watch(thinkingUserProvider);
-    print('user3: ${user3?.deviceId}');
     try {
       final response = await supabase
           .from('thinkingLog')
@@ -199,8 +194,6 @@ class _Think3minScreenState extends ConsumerState<Think3minScreen>
           })
           .select()
           .single();
-
-      print('response: $response');
 
       // 새로운 ThinkingLog를 생성하고 provider에 추가
       final newLog = ThinkingLog(
@@ -217,10 +210,7 @@ class _Think3minScreenState extends ConsumerState<Think3minScreen>
       ];
 
       await clearSavedState();
-      setState(() {
-        showEndModal = false;
-      });
-      context.pop();
+      router.pop();
     } catch (error) {
       print('데이터 삽입 중 오류 발생: $error');
     }
@@ -231,6 +221,68 @@ class _Think3minScreenState extends ConsumerState<Think3minScreen>
     await prefs.remove('timeLeft');
     await prefs.remove('thinkingDesc');
     await prefs.remove('savedDate');
+  }
+
+  void showModal({
+    required String title,
+    required Widget content,
+    required VoidCallback onConfirm,
+  }) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return Dialog(
+          backgroundColor: Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16.0),
+          ),
+          child: Container(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Text(title,
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w700,
+                    )),
+                const SizedBox(height: 10),
+                DefaultTextStyle(
+                  style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.black),
+                  child: Flexible(
+                    child: content,
+                  ),
+                ),
+                const SizedBox(height: 24),
+                ElevatedButton(
+                  onPressed: () {
+                    onConfirm();
+                    Navigator.of(context).pop();
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: HexColor('#FD9800'),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(11)),
+                    minimumSize: const Size(double.infinity, 44),
+                  ),
+                  child: const Text(
+                    "확인",
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
   }
 
   @override
@@ -267,28 +319,44 @@ class _Think3minScreenState extends ConsumerState<Think3minScreen>
           ),
           if (showHint) buildHintContainer(),
           if (showStartModal)
-            buildModal(
-              title: "3분 생각 시작",
-              content: const Column(
-                children: [
-                  Text("자유롭게 생각을 기록해보세요."),
-                  Text("만약 무슨 생각을 기록할지 막막하다면"),
-                  Text("오른쪽 상단의 힌트 아이콘💡을 눌러"),
-                  Text("힌트를 얻어보세요."),
-                ],
-              ),
-              onConfirm: handleStartConfirm,
+            Builder(
+              builder: (context) {
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  showModal(
+                    title: "3분 생각 시작",
+                    content: const Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text("자유롭게 생각을 기록해보세요."),
+                        Text("만약 무슨 생각을 기록할지 막막하다면"),
+                        Text("오른쪽 상단의 힌트 아이콘💡을 눌러"),
+                        Text("힌트를 얻어보세요."),
+                      ],
+                    ),
+                    onConfirm: handleStartConfirm,
+                  );
+                });
+                return Container();
+              },
             ),
           if (showEndModal)
-            buildModal(
-              title: "3분 생각",
-              content: const Column(
-                children: [
-                  Text("너무 좋은 생각이에요."),
-                  Text("오늘 당신은 열심히 생각한 사람!"),
-                ],
-              ),
-              onConfirm: handleEndConfirm,
+            Builder(
+              builder: (context) {
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  showModal(
+                    title: "3분 생각 완료",
+                    content: const Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text("너무 좋은 생각이에요."),
+                        Text("오늘 당신은 열심히 생각한 사람!"),
+                      ],
+                    ),
+                    onConfirm: handleEndConfirm,
+                  );
+                });
+                return Container();
+              },
             ),
         ],
       ),
@@ -372,88 +440,6 @@ class _Think3minScreenState extends ConsumerState<Think3minScreen>
                   width: 16, height: 16),
             ),
           ],
-        ),
-      ),
-    );
-  }
-
-  Widget buildStartModal() {
-    return buildModal(
-      title: "3분 생각 시작",
-      content: const Column(
-        children: [
-          Text("자유롭게 생각을 기록해보세요."),
-          Text("만약 무슨 생각을 기록할지 막막하다면"),
-          Text("오른쪽 상단의 힌트 아이콘💡을 눌러"),
-          Text("힌트를 얻어보세요."),
-        ],
-      ),
-      onConfirm: handleStartConfirm,
-    );
-  }
-
-  Widget buildEndModal() {
-    return buildModal(
-      title: "3분 생각",
-      content: const Column(
-        children: [
-          Text("너무 좋은 생각이에요."),
-          Text("오늘 당신은 열심히 생각한 사람!"),
-        ],
-      ),
-      onConfirm: handleEndConfirm,
-    );
-  }
-
-  Widget buildModal(
-      {required String title,
-      required Widget content,
-      required VoidCallback onConfirm}) {
-    return Container(
-      color: Colors.black.withOpacity(0.3),
-      child: Center(
-        child: Container(
-          width: MediaQuery.of(context).size.width * 0.8,
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(16),
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(title,
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w700,
-                  )),
-              const SizedBox(height: 10),
-              DefaultTextStyle(
-                style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.black),
-                child: content,
-              ),
-              const SizedBox(height: 24),
-              ElevatedButton(
-                onPressed: onConfirm,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: HexColor('#FD9800'),
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(11)),
-                  minimumSize: const Size(double.infinity, 44),
-                ),
-                child: const Text(
-                  "확인",
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 15,
-                      fontWeight: FontWeight.w700),
-                ),
-              ),
-            ],
-          ),
         ),
       ),
     );
