@@ -51,7 +51,7 @@ class _Think3minScreenState extends ConsumerState<Think3minScreen>
     "💡 내가 상상하는 미래의 모습은 어떤 것일까?",
     "💡 주변에서 보이는 사소한 것들에서 발견한 아이디어는?",
     "💡 내가 좋아하는 노래에서 얻은 영감은?",
-    "💡 최근의 대화 중 기억에 남는 한마디는 무엇인?",
+    "💡 최근 ��� 중 기억에 남는 한마디는 무엇인?",
     "💡 내가 는 세상은 어떤 모습일까?",
     "💡 일상 속에서 반복되는 패턴에서 발견할 수 있는 것은?",
     "💡 오늘 내가 할수 있는 가장 작은 도전은 무엇일까?",
@@ -101,7 +101,10 @@ class _Think3minScreenState extends ConsumerState<Think3minScreen>
           timeLeft--;
         } else {
           stopTimer();
-          showEndModal = true;
+          if (!showEndModal) {
+            // 이미 모달이 표시되지 않은 경우에만 설정
+            showEndModal = true;
+          }
         }
       });
     });
@@ -177,7 +180,7 @@ class _Think3minScreenState extends ConsumerState<Think3minScreen>
   Future<void> handleEndConfirm() async {
     if (thinkingDesc.isEmpty) {
       await clearSavedState();
-      router.pop();
+      GoRouter.of(context).pop();
       return;
     }
 
@@ -210,7 +213,7 @@ class _Think3minScreenState extends ConsumerState<Think3minScreen>
       ];
 
       await clearSavedState();
-      router.pop();
+      GoRouter.of(context).pop();
     } catch (error) {
       print('데이터 삽입 중 오류 발생: $error');
     }
@@ -258,12 +261,12 @@ class _Think3minScreenState extends ConsumerState<Think3minScreen>
                   ),
                 ),
                 const SizedBox(height: 24),
-                ElevatedButton(
+                TextButton(
                   onPressed: () {
                     onConfirm();
                     Navigator.of(context).pop();
                   },
-                  style: ElevatedButton.styleFrom(
+                  style: TextButton.styleFrom(
                     backgroundColor: HexColor('#FD9800'),
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(11)),
@@ -371,7 +374,8 @@ class _Think3minScreenState extends ConsumerState<Think3minScreen>
           Align(
             alignment: Alignment.center,
             child: Row(
-              mainAxisSize: MainAxisSize.min,
+              mainAxisSize: MainAxisSize.max,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Lottie.asset(
                   'assets/lotties/clock.json',
@@ -403,14 +407,10 @@ class _Think3minScreenState extends ConsumerState<Think3minScreen>
   }
 
   Widget buildHintContainer() {
-    final bottomPadding = MediaQuery.of(context).viewInsets.bottom > 0
-        ? MediaQuery.of(context).viewInsets.bottom + 16
-        : 16;
-
     return AnimatedPositioned(
       duration: const Duration(milliseconds: 300),
       curve: Curves.easeInOut,
-      bottom: bottomPadding.toDouble(),
+      bottom: 16,
       left: 16,
       right: 16,
       child: Container(
@@ -421,9 +421,9 @@ class _Think3minScreenState extends ConsumerState<Think3minScreen>
           borderRadius: BorderRadius.circular(20),
         ),
         child: Row(
-          mainAxisSize: MainAxisSize.min,
+          mainAxisSize: MainAxisSize.max,
           children: [
-            Flexible(
+            Expanded(
               child: Text(
                 currentHint,
                 style: const TextStyle(

@@ -36,6 +36,7 @@ class HistoryScreen extends ConsumerWidget {
       backgroundColor: Colors.white,
       body: SafeArea(
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
           children: [
             SizedBox(
               width: double.infinity,
@@ -70,27 +71,33 @@ class HistoryScreen extends ConsumerWidget {
               ),
             ),
             Expanded(
-              child: SingleChildScrollView(
-                child: selectedDateLog.thinkingDesc.isNotEmpty
-                    ? Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 20),
-                        child: Text(
-                          selectedDateLog.thinkingDesc,
-                          style: const TextStyle(
-                              fontSize: 16, fontFamily: 'Pretendard'),
-                        ),
-                      )
-                    : const Padding(
-                        padding: EdgeInsets.only(top: 20),
-                        child: Text(
-                          '이 날의 생각이 없습니다.',
-                          style: TextStyle(
-                              fontSize: 16,
-                              color: Colors.grey,
-                              fontFamily: 'Pretendard'),
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: SingleChildScrollView(
+                  child: SizedBox(
+                    width: double.infinity,
+                    child: selectedDateLog.thinkingDesc.isNotEmpty
+                        ? Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 20),
+                            child: Text(
+                              selectedDateLog.thinkingDesc,
+                              style: const TextStyle(
+                                  fontSize: 16, fontFamily: 'Pretendard'),
+                            ),
+                          )
+                        : const Padding(
+                            padding: EdgeInsets.only(top: 20),
+                            child: Text(
+                              '이 날의 생각이 없습니다.',
+                              style: TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.grey,
+                                  fontFamily: 'Pretendard'),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                  ),
+                ),
               ),
             ),
           ],
