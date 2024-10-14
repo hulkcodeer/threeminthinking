@@ -121,6 +121,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   DateTime(_focusedDay.year, _focusedDay.month - 1, 1);
               _updateMarkedDates();
             }),
+            splashColor: Colors.transparent, // 누르는 효과 제거
+            highlightColor: Colors.transparent, // 누르는 효과 제거
           ),
           Expanded(
             child: Column(
@@ -155,6 +157,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   DateTime(_focusedDay.year, _focusedDay.month + 1, 1);
               _updateMarkedDates();
             }),
+            splashColor: Colors.transparent, // 누르는 효과 제거
+            highlightColor: Colors.transparent, // 누르는 효과 제거
           ),
         ],
       ),
@@ -261,9 +265,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          backgroundColor: HexColor('#FD9800'),
+      child: TextButton(
+        style: TextButton.styleFrom(
+          backgroundColor:
+              _isTodayLogExist ? HexColor('#D9D9D9') : HexColor('#FD9800'),
           minimumSize: const Size(double.infinity, 56),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
@@ -285,6 +290,24 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       width: double.infinity,
       height: 50,
       child: _bannerAd == null ? Container() : AdWidget(ad: _bannerAd!),
+    );
+  }
+
+  Widget _buildContent() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20), // 양옆 20의 여백 추가
+      child: Column(
+        children: [
+          // ... existing code ...
+          Expanded(
+            child: Container(
+              width: double.infinity,
+              // 여기에 원하는 위젯을 추가하세요
+            ),
+          ),
+          // ... existing code ...
+        ],
+      ),
     );
   }
 }
