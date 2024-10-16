@@ -21,7 +21,7 @@ class Think3minScreen extends ConsumerStatefulWidget {
 
 class _Think3minScreenState extends ConsumerState<Think3minScreen>
     with WidgetsBindingObserver {
-  static const int THINKING_TIME = 10;
+  static const int THINKING_TIME = 180;
   int timeLeft = THINKING_TIME;
   bool showStartModal = true;
   bool showEndModal = false;
@@ -51,8 +51,8 @@ class _Think3minScreenState extends ConsumerState<Think3minScreen>
     "💡 내가 상상하는 미래의 모습은 어떤 것일까?",
     "💡 주변에서 보이는 사소한 것들에서 발견한 아이디어는?",
     "💡 내가 좋아하는 노래에서 얻은 영감은?",
-    "💡 최근 ��� 중 기억에 남는 한마디는 무엇인?",
-    "💡 내가 는 세상은 어떤 모습일까?",
+    "💡 최근 대화중 기억에 남는 한마디는 무엇인?",
+    "💡 내가 바라는 세상은 어떤 모습일까?",
     "💡 일상 속에서 반복되는 패턴에서 발견할 수 있는 것은?",
     "💡 오늘 내가 할수 있는 가장 작은 도전은 무엇일까?",
     "💡 나의 꿈은 무엇이며, 그에 대한 계획은?",
@@ -413,18 +413,19 @@ class _Think3minScreenState extends ConsumerState<Think3minScreen>
       bottom: 16,
       left: 16,
       right: 16,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        margin: const EdgeInsets.only(bottom: 16),
-        decoration: BoxDecoration(
-          color: const Color(0xFFFFE58B),
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.max,
-          children: [
-            Expanded(
-              child: Text(
+      child: Align(
+        alignment: Alignment.bottomCenter,
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          margin: const EdgeInsets.only(bottom: 16),
+          decoration: BoxDecoration(
+            color: const Color(0xFFFFE58B),
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Wrap(
+            crossAxisAlignment: WrapCrossAlignment.center,
+            children: [
+              Text(
                 currentHint,
                 style: const TextStyle(
                     fontSize: 13,
@@ -432,14 +433,14 @@ class _Think3minScreenState extends ConsumerState<Think3minScreen>
                     color: Color(0xFFD03E00),
                     fontFamily: 'Pretendard'),
               ),
-            ),
-            const SizedBox(width: 8),
-            GestureDetector(
-              onTap: () => setState(() => showHint = false),
-              child: SvgPicture.asset('assets/images/hint_close.svg',
-                  width: 16, height: 16),
-            ),
-          ],
+              const SizedBox(width: 8),
+              GestureDetector(
+                onTap: () => setState(() => showHint = false),
+                child: SvgPicture.asset('assets/images/hint_close.svg',
+                    width: 16, height: 16),
+              ),
+            ],
+          ),
         ),
       ),
     );

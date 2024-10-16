@@ -3,6 +3,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:threeminthinking/providers/user_provider.dart';
 import 'package:threeminthinking/screens/home_screen.dart';
 import 'package:threeminthinking/screens/splash_screen.dart';
@@ -64,6 +65,10 @@ class HistoryScreen extends ConsumerWidget {
                       icon: SvgPicture.asset('assets/images/ic_share.svg'),
                       onPressed: () {
                         // 공유 기능 구현
+
+                        Share.share(selectedDateLog.thinkingDesc.isNotEmpty
+                            ? selectedDateLog.thinkingDesc
+                            : '이 날의 생각이 없습니다.');
                       },
                     ),
                   ),
