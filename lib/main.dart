@@ -1,3 +1,4 @@
+import 'package:app_links/app_links.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -8,15 +9,28 @@ import 'package:threeminthinking/utils/router.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Await dotenv.load to ensure environment variables are loaded
+  final appLinks = AppLinks();
+
+  try {
+    final initialLink = await appLinks.getInitialLink(); // 올바른 메서드 호출
+    print('Initial link: $initialLink');
+  } catch (e) {
+    print('Error retrieving initial link: $e');
+  }
+
   await dotenv.load(fileName: '.env');
 
-  await MobileAds.instance.initialize();
-
-  await Supabase.initialize(
-    url: dotenv.get('SUPABASE_URL'),
-    anonKey: dotenv.get('SUPABASE_ANON_KEY'),
-  );
+  try {
+    await Supabase.initialize(
+      url: dotenv.get('SUPABASE_URL'),
+      anonKey: dotenv.get('SUPABASE_ANON_KEY'),
+    );
+  } catch (e) {
+    if (e is! AuthException && e is! NoSuchMethodError) {
+      print('Unhandled exception: $e');
+      // 추가적인 예외 처리 로직
+    }
+  }
 
   runApp(const ProviderScope(child: MyApp()));
 }
