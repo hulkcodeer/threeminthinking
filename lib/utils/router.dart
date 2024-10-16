@@ -17,7 +17,7 @@ final router = GoRouter(
     ),
     GoRoute(
       path: '/think3min',
-      builder: (context, state) => Think3minScreen(),
+      builder: (context, state) => const Think3minScreen(),
     ),
     GoRoute(
       path: '/history',

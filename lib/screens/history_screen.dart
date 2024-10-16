@@ -4,8 +4,6 @@ import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:share_plus/share_plus.dart';
-import 'package:threeminthinking/providers/user_provider.dart';
-import 'package:threeminthinking/screens/home_screen.dart';
 import 'package:threeminthinking/screens/splash_screen.dart';
 import '../providers/thinking_log_provider.dart';
 

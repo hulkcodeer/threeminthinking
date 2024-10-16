@@ -2,14 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:device_info_plus/device_info_plus.dart';
 import 'package:threeminthinking/providers/thinking_log_provider.dart';
 import 'package:threeminthinking/providers/user_provider.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:threeminthinking/utils/device_key.dart';
 import 'package:threeminthinking/utils/hexcolor.dart';
-import 'package:threeminthinking/utils/router.dart';
 
 // 사용자 상태 관리를 위한 프로바이더
 final thinkingUserProvider =
