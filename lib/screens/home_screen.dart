@@ -92,7 +92,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final logs = ref.watch(thinkingLogsProvider); // build 메서드 내에서 watch 사용
-    print('logs: $logs');
+
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: HexColor('#FFFFFFFF'),

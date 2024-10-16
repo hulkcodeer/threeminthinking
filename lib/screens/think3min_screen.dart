@@ -20,6 +20,7 @@ class Think3minScreen extends ConsumerStatefulWidget {
 class _Think3minScreenState extends ConsumerState<Think3minScreen>
     with WidgetsBindingObserver {
   static const int THINKING_TIME = 180;
+  // static const int THINKING_TIME = 5;
   int timeLeft = THINKING_TIME;
   bool showStartModal = true;
   bool showEndModal = false;
@@ -79,20 +80,24 @@ class _Think3minScreenState extends ConsumerState<Think3minScreen>
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
     timer?.cancel();
+    timer = null;
     super.dispose();
   }
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.paused) {
+      print('paused');
       saveCurrentState();
       stopTimer();
     } else if (state == AppLifecycleState.resumed) {
+      print('resumed');
       loadSavedState();
     }
   }
 
   void startTimer() {
+    print('isActive: ${timer?.isActive}');
     timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       setState(() {
         if (timeLeft > 0) {
@@ -110,6 +115,7 @@ class _Think3minScreenState extends ConsumerState<Think3minScreen>
 
   void stopTimer() {
     timer?.cancel();
+    timer = null;
     setState(() {
       isTimerRunning = false;
     });
@@ -138,6 +144,7 @@ class _Think3minScreenState extends ConsumerState<Think3minScreen>
           thinkingDesc = savedThinkingDesc;
           isEditable = true;
           showStartModal = false;
+          isTimerRunning = true;
         });
         startTimer();
       } else {
@@ -176,16 +183,19 @@ class _Think3minScreenState extends ConsumerState<Think3minScreen>
   }
 
   Future<void> handleEndConfirm() async {
+    if (!mounted) return;
+
+    final today = DateTime.now().toIso8601String().split('T')[0];
+    final user = ref.read(thinkingUserProvider);
+
     if (thinkingDesc.isEmpty) {
       await clearSavedState();
       GoRouter.of(context).pop();
       return;
     }
 
-    final today = DateTime.now().toIso8601String().split('T')[0];
-    final user = ref.read(thinkingUserProvider);
-
     try {
+      // 데이터 삽입을 백그라운드에서 처리
       final response = await supabase
           .from('thinkingLog')
           .insert({
@@ -196,7 +206,6 @@ class _Think3minScreenState extends ConsumerState<Think3minScreen>
           .select()
           .single();
 
-      // 새로운 ThinkingLog를 생성하고 provider에 추가
       final newLog = ThinkingLog(
         id: response['id'],
         deviceId: user?.deviceId ?? 'unknown',
@@ -211,9 +220,12 @@ class _Think3minScreenState extends ConsumerState<Think3minScreen>
       ];
 
       await clearSavedState();
+
+      // UI를 즉시 업데이트
       GoRouter.of(context).pop();
     } catch (error) {
-      print('데이터 삽입 중 오류 발생: $error');
+      print('오류 발생: $error');
+      // 오류 처리 (예: 사용자에게 알림)
     }
   }
 
@@ -366,6 +378,7 @@ class _Think3minScreenState extends ConsumerState<Think3minScreen>
 
   Widget buildHeader() {
     return SizedBox(
+      width: double.infinity,
       height: 48,
       child: Stack(
         children: [
@@ -381,13 +394,18 @@ class _Think3minScreenState extends ConsumerState<Think3minScreen>
                   height: 24,
                   animate: isTimerRunning,
                 ),
-                const SizedBox(width: 8),
-                Text(
-                  '${timeLeft ~/ 60}:${(timeLeft % 60).toString().padLeft(2, '0')}',
-                  style: const TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.w500,
-                      fontFamily: 'Pretendard'),
+                SizedBox(
+                  width: 70, // 텍스트의 최대 너비를 지정합니다. 필요에 따라 조정하세요.
+                  child: Center(
+                    child: Text(
+                      '${timeLeft ~/ 60}:${(timeLeft % 60).toString().padLeft(2, '0')}',
+                      style: const TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.w500,
+                        fontFamily: 'Pretendard',
+                      ),
+                    ),
+                  ),
                 ),
               ],
             ),
