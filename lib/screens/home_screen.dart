@@ -141,7 +141,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 ),
                 const SizedBox(height: 24),
                 Text(
-                  '${_calendarTitle}',
+                  _calendarTitle,
                   style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w700,
@@ -179,14 +179,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         onDaySelected: (day, focusedDay) {
           router.push('/history?date=${DateFormat('yyyy-MM-dd').format(day)}');
         },
-        calendarStyle: CalendarStyle(
+        calendarStyle: const CalendarStyle(
           // 기존 스타일 설정 유지
           // 오늘 날짜의 기본 스타일을 비활성화
-          todayDecoration: const BoxDecoration(
+          todayDecoration: BoxDecoration(
             shape: BoxShape.circle,
             color: Colors.transparent,
           ),
-          todayTextStyle: const TextStyle(
+          todayTextStyle: TextStyle(
               color: Colors.black, fontSize: 16, fontWeight: FontWeight.w700),
         ),
         calendarBuilders: CalendarBuilders(

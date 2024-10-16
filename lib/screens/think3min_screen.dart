@@ -7,10 +7,8 @@ import 'package:lottie/lottie.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:go_router/go_router.dart';
 import 'package:threeminthinking/providers/thinking_log_provider.dart';
-import 'package:threeminthinking/screens/history_screen.dart';
 import 'package:threeminthinking/screens/splash_screen.dart';
 import 'package:threeminthinking/utils/hexcolor.dart';
-import 'package:threeminthinking/utils/router.dart';
 
 class Think3minScreen extends ConsumerStatefulWidget {
   const Think3minScreen({super.key});
@@ -51,7 +49,7 @@ class _Think3minScreenState extends ConsumerState<Think3minScreen>
     "💡 내가 상상하는 미래의 모습은 어떤 것일까?",
     "💡 주변에서 보이는 사소한 것들에서 발견한 아이디어는?",
     "💡 내가 좋아하는 노래에서 얻은 영감은?",
-    "💡 최근 대화중 기억에 남는 한마디는 무엇인?",
+    "💡 최근 대화중 기억에 남는 한마디는 무엇인가?",
     "💡 내가 바라는 세상은 어떤 모습일까?",
     "💡 일상 속에서 반복되는 패턴에서 발견할 수 있는 것은?",
     "💡 오늘 내가 할수 있는 가장 작은 도전은 무엇일까?",
