@@ -93,24 +93,27 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   Widget build(BuildContext context) {
     final logs = ref.watch(thinkingLogsProvider); // build 메서드 내에서 watch 사용
 
+    final screenSize = MediaQuery.of(context).size;
+    final isLargeScreen = screenSize.height >= 812;
+
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: HexColor('#FFFFFFFF'),
       body: Column(
         children: [
-          _buildHeader(),
-          _buildCalendar(logs),
+          _buildHeader(isLargeScreen),
+          _buildCalendar(logs, isLargeScreen),
           const Spacer(),
-          _buildButton(),
-          _buildAdBanner(),
+          _buildButton(isLargeScreen),
+          isLargeScreen ? _buildAdBanner() : Container(),
         ],
       ),
     );
   }
 
-  Widget _buildHeader() {
+  Widget _buildHeader(bool isLargeScreen) {
     return Container(
-      padding: const EdgeInsets.fromLTRB(20, 68, 20, 23),
+      padding: EdgeInsets.fromLTRB(20, isLargeScreen ? 68 : 20, 20, 23),
       color: const Color(0xFFFFE58B),
       child: Row(
         children: [
@@ -139,7 +142,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   width: 120,
                   height: 120,
                 ),
-                const SizedBox(height: 24),
+                SizedBox(height: isLargeScreen ? 24 : 0),
                 Text(
                   _calendarTitle,
                   style: const TextStyle(
@@ -166,9 +169,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     );
   }
 
-  Widget _buildCalendar(List<ThinkingLog> logs) {
+  Widget _buildCalendar(List<ThinkingLog> logs, bool isLargeScreen) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(43, 30, 43, 32),
+      padding: EdgeInsets.fromLTRB(
+          43, isLargeScreen ? 30 : 0, 43, isLargeScreen ? 32 : 0),
       child: TableCalendar(
         firstDay: DateTime.utc(2010, 10, 16),
         lastDay: DateTime.utc(2030, 3, 14),
@@ -259,7 +263,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     );
   }
 
-  Widget _buildButton() {
+  Widget _buildButton(bool isLargeScreen) {
     final logs = ref.watch(thinkingLogsProvider);
     final today = DateFormat('yyyy-MM-dd').format(DateTime.now());
     _isTodayLogExist = logs.any((log) => log.dateDesc == today);
