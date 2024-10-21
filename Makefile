@@ -6,3 +6,6 @@ deploy:
 
 release:
 	flutter build appbundle
+
+freezed:
+	flutter pub run build_runner build --delete-conflicting-outputs

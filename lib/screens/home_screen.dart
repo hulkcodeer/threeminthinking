@@ -43,7 +43,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   void _loadBannerAd() {
     BannerAd(
-      adUnitId: AdHelper.bannerAdUnitId,
+      adUnitId: AdHelper.mianBannerAdUnitId,
       request: const AdRequest(),
       size: AdSize.banner,
       listener: BannerAdListener(
@@ -295,24 +295,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       width: double.infinity,
       height: 50,
       child: _bannerAd == null ? Container() : AdWidget(ad: _bannerAd!),
-    );
-  }
-
-  Widget _buildContent() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20), // 양옆 20의 여백 추가
-      child: Column(
-        children: [
-          // ... existing code ...
-          Expanded(
-            child: Container(
-              width: double.infinity,
-              // 여기에 원하는 위젯을 추가하세요
-            ),
-          ),
-          // ... existing code ...
-        ],
-      ),
     );
   }
 }

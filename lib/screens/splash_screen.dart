@@ -53,13 +53,9 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
           .maybeSingle();
 
       if (response != null) {
-        print('response: $response');
         ref
             .read(thinkingUserProvider.notifier)
             .setThinkingUser(ThinkingUser.fromJson(response));
-
-        final user = ref.watch(thinkingUserProvider)?.deviceId;
-        print('user: $user');
 
         final thinkingData = await supabase
             .from('thinkingLog')

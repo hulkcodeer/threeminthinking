@@ -7,8 +7,11 @@ import 'package:lottie/lottie.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:go_router/go_router.dart';
 import 'package:threeminthinking/providers/thinking_log_provider.dart';
+import 'package:threeminthinking/providers/thinking_state_provider.dart';
 import 'package:threeminthinking/screens/splash_screen.dart';
+import 'package:threeminthinking/utils/ad_helper.dart';
 import 'package:threeminthinking/utils/hexcolor.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 class Think3minScreen extends ConsumerStatefulWidget {
   const Think3minScreen({super.key});
@@ -19,17 +22,9 @@ class Think3minScreen extends ConsumerStatefulWidget {
 
 class _Think3minScreenState extends ConsumerState<Think3minScreen>
     with WidgetsBindingObserver {
-  static const int THINKING_TIME = 180;
-  // static const int THINKING_TIME = 5;
-  int timeLeft = THINKING_TIME;
-  bool showStartModal = true;
-  bool showEndModal = false;
-  String thinkingDesc = "";
-  bool isTimerRunning = false;
   Timer? timer;
-  bool showHint = false;
   String currentHint = "";
-  bool isEditable = false;
+  BannerAd? _bannerAd;
 
   final supabase = Supabase.instance.client;
 
@@ -73,7 +68,12 @@ class _Think3minScreenState extends ConsumerState<Think3minScreen>
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    loadSavedState();
+    _loadBannerAd();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      loadSavedState();
+      _handleShowStartModal();
+    });
   }
 
   @override
@@ -81,50 +81,73 @@ class _Think3minScreenState extends ConsumerState<Think3minScreen>
     WidgetsBinding.instance.removeObserver(this);
     timer?.cancel();
     timer = null;
+    _bannerAd?.dispose();
     super.dispose();
   }
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.paused) {
-      print('paused');
       saveCurrentState();
       stopTimer();
     } else if (state == AppLifecycleState.resumed) {
-      print('resumed');
       loadSavedState();
     }
   }
 
+  void resetThinkingState() {
+    ref.read(thinkingStateProvider.notifier).resetState();
+  }
+
+  void _loadBannerAd() {
+    BannerAd(
+      adUnitId: AdHelper.thinkingLogBannerAdUnitId,
+      request: const AdRequest(),
+      size: AdSize.banner,
+      listener: BannerAdListener(
+        onAdLoaded: (ad) {
+          setState(() {
+            _bannerAd = ad as BannerAd;
+          });
+        },
+        onAdFailedToLoad: (ad, err) {
+          print('Failed to load a banner ad: ${err.message}');
+          ad.dispose();
+        },
+      ),
+    ).load();
+  }
+
   void startTimer() {
-    print('isActive: ${timer?.isActive}');
+    final thinkingState = ref.read(thinkingStateProvider);
     timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      setState(() {
-        if (timeLeft > 0) {
-          timeLeft--;
-        } else {
-          stopTimer();
-          if (!showEndModal) {
-            // 이미 모달이 표시되지 않은 경우에만 설정
-            showEndModal = true;
-          }
+      final currentState = ref.read(thinkingStateProvider);
+
+      if (currentState.timeLeft > 0) {
+        ref
+            .read(thinkingStateProvider.notifier)
+            .setTimeLeft(currentState.timeLeft - 1);
+      } else {
+        stopTimer();
+        if (!currentState.showEndModal) {
+          ref.read(thinkingStateProvider.notifier).setShowEndModal(true);
         }
-      });
+      }
     });
+    ref.read(thinkingStateProvider.notifier).setIsTimerRunning(true);
   }
 
   void stopTimer() {
     timer?.cancel();
     timer = null;
-    setState(() {
-      isTimerRunning = false;
-    });
+    ref.read(thinkingStateProvider.notifier).setIsTimerRunning(false);
   }
 
   Future<void> saveCurrentState() async {
+    final thinkingState = ref.watch(thinkingStateProvider);
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setInt('timeLeft', timeLeft);
-    await prefs.setString('thinkingDesc', thinkingDesc);
+    await prefs.setInt('timeLeft', thinkingState.timeLeft);
+    await prefs.setString('thinkingDesc', thinkingState.thinkingDesc);
     await prefs.setString('savedDate', DateTime.now().toIso8601String());
   }
 
@@ -139,27 +162,17 @@ class _Think3minScreenState extends ConsumerState<Think3minScreen>
         savedDate != null) {
       final savedDateTime = DateTime.parse(savedDate);
       if (savedDateTime.day == DateTime.now().day && savedTimeLeft > 0) {
-        setState(() {
-          timeLeft = savedTimeLeft;
-          thinkingDesc = savedThinkingDesc;
-          isEditable = true;
-          showStartModal = false;
-          isTimerRunning = true;
-        });
+        ref.read(thinkingStateProvider.notifier).setTimeLeft(savedTimeLeft);
+        ref
+            .read(thinkingStateProvider.notifier)
+            .updateThinkingDesc(savedThinkingDesc);
+        ref.read(thinkingStateProvider.notifier).setIsEditable(true);
+        ref.read(thinkingStateProvider.notifier).setShowStartModal(false);
+        ref.read(thinkingStateProvider.notifier).setIsTimerRunning(true);
+
         startTimer();
-      } else {
-        resetState();
       }
     }
-  }
-
-  void resetState() {
-    setState(() {
-      timeLeft = THINKING_TIME;
-      thinkingDesc = "";
-      isTimerRunning = false;
-      showStartModal = true;
-    });
   }
 
   String getRandomHint() {
@@ -167,28 +180,27 @@ class _Think3minScreenState extends ConsumerState<Think3minScreen>
   }
 
   void handleHintPress() {
-    setState(() {
-      currentHint = getRandomHint();
-      showHint = true;
-    });
+    currentHint = getRandomHint();
+    ref.read(thinkingStateProvider.notifier).setShowHint(true);
   }
 
   void handleStartConfirm() {
-    setState(() {
-      showStartModal = false;
-      isTimerRunning = true;
-      isEditable = true;
-    });
+    ref.read(thinkingStateProvider.notifier).setShowStartModal(false);
+    ref.read(thinkingStateProvider.notifier).setIsTimerRunning(true);
+    ref.read(thinkingStateProvider.notifier).setIsEditable(true);
     startTimer();
   }
 
   Future<void> handleEndConfirm() async {
     if (!mounted) return;
+    final thinkingState = ref.watch(thinkingStateProvider);
 
     final today = DateTime.now().toIso8601String().split('T')[0];
     final user = ref.read(thinkingUserProvider);
 
-    if (thinkingDesc.isEmpty) {
+    ref.read(thinkingStateProvider.notifier).resetState();
+
+    if (thinkingState.thinkingDesc.isEmpty) {
       await clearSavedState();
       GoRouter.of(context).pop();
       return;
@@ -199,7 +211,7 @@ class _Think3minScreenState extends ConsumerState<Think3minScreen>
       final response = await supabase
           .from('thinkingLog')
           .insert({
-            'thinkingDesc': thinkingDesc,
+            'thinkingDesc': thinkingState.thinkingDesc,
             'deviceId': user?.deviceId ?? 'unknown',
             'dateDesc': today,
           })
@@ -308,6 +320,7 @@ class _Think3minScreenState extends ConsumerState<Think3minScreen>
             child: Column(
               children: [
                 buildHeader(),
+                _buildAdBanner(),
                 Expanded(
                   child: TextField(
                     maxLines: null,
@@ -323,39 +336,23 @@ class _Think3minScreenState extends ConsumerState<Think3minScreen>
                         fontSize: 18,
                         fontWeight: FontWeight.w500,
                         fontFamily: 'Pretendard'),
-                    onChanged: (value) => setState(() => thinkingDesc = value),
-                    enabled: isEditable,
+                    onChanged: (value) => ref
+                        .read(thinkingStateProvider.notifier)
+                        .updateThinkingDesc(value),
+                    enabled: ref.watch(thinkingStateProvider).isEditable,
                   ),
                 ),
               ],
             ),
           ),
-          if (showHint) buildHintContainer(),
-          if (showStartModal)
+          if (ref.watch(thinkingStateProvider).showHint) buildHintContainer(),
+          if (ref.watch(thinkingStateProvider).showEndModal)
             Builder(
               builder: (context) {
                 WidgetsBinding.instance.addPostFrameCallback((_) {
-                  showModal(
-                    title: "3분 생각 시작",
-                    content: const Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text("자유롭게 생각을 기록해보세요."),
-                        Text("만약 무슨 생각을 기록할지 막막하다면"),
-                        Text("오른쪽 상단의 힌트 아이콘💡을 눌러"),
-                        Text("힌트를 얻어보세요."),
-                      ],
-                    ),
-                    onConfirm: handleStartConfirm,
-                  );
-                });
-                return Container();
-              },
-            ),
-          if (showEndModal)
-            Builder(
-              builder: (context) {
-                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  if (!ref.watch(thinkingStateProvider).showEndModal) {
+                    return;
+                  }
                   showModal(
                     title: "3분 생각 완료",
                     content: const Column(
@@ -376,7 +373,34 @@ class _Think3minScreenState extends ConsumerState<Think3minScreen>
     );
   }
 
+  void _handleShowStartModal() {
+    final showStartModal = ref
+        .watch(thinkingStateProvider.select((state) => state.showStartModal));
+
+    if (!showStartModal) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        showModal(
+          title: "3분 생각 시작",
+          content: const Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text("자유롭게 생각을 기록해보세요."),
+              Text("만약 무슨 생각을 기록할지 막막하다면"),
+              Text("오른쪽 상단의 힌트 아이콘💡을 눌러"),
+              Text("힌트를 얻어보세요."),
+            ],
+          ),
+          onConfirm: () {
+            handleStartConfirm();
+          },
+        );
+      });
+    }
+  }
+
   Widget buildHeader() {
+    final thinkingState = ref.watch(thinkingStateProvider);
+
     return SizedBox(
       width: double.infinity,
       height: 48,
@@ -392,13 +416,13 @@ class _Think3minScreenState extends ConsumerState<Think3minScreen>
                   'assets/lotties/clock.json',
                   width: 24,
                   height: 24,
-                  animate: isTimerRunning,
+                  animate: thinkingState.isTimerRunning,
                 ),
                 SizedBox(
                   width: 70, // 텍스트의 최대 너비를 지정합니다. 필요에 따라 조정하세요.
                   child: Center(
                     child: Text(
-                      '${timeLeft ~/ 60}:${(timeLeft % 60).toString().padLeft(2, '0')}',
+                      '${thinkingState.timeLeft ~/ 60}:${(thinkingState.timeLeft % 60).toString().padLeft(2, '0')}',
                       style: const TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.w500,
@@ -414,7 +438,9 @@ class _Think3minScreenState extends ConsumerState<Think3minScreen>
             right: 12,
             child: IconButton(
               icon: SvgPicture.asset('assets/images/lightbulb_flash_fill.svg'),
-              onPressed: handleHintPress,
+              onPressed: () => ref
+                  .read(thinkingStateProvider.notifier)
+                  .setShowHint(!thinkingState.showHint),
             ),
           ),
         ],
@@ -423,6 +449,8 @@ class _Think3minScreenState extends ConsumerState<Think3minScreen>
   }
 
   Widget buildHintContainer() {
+    final thinkingState = ref.watch(thinkingStateProvider);
+
     return AnimatedPositioned(
       duration: const Duration(milliseconds: 300),
       curve: Curves.easeInOut,
@@ -442,7 +470,7 @@ class _Think3minScreenState extends ConsumerState<Think3minScreen>
             crossAxisAlignment: WrapCrossAlignment.center,
             children: [
               Text(
-                currentHint,
+                thinkingState.currentHint,
                 style: const TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w500,
@@ -451,7 +479,8 @@ class _Think3minScreenState extends ConsumerState<Think3minScreen>
               ),
               const SizedBox(width: 8),
               GestureDetector(
-                onTap: () => setState(() => showHint = false),
+                onTap: () =>
+                    ref.read(thinkingStateProvider.notifier).setShowHint(false),
                 child: SvgPicture.asset('assets/images/hint_close.svg',
                     width: 16, height: 16),
               ),
@@ -459,6 +488,15 @@ class _Think3minScreenState extends ConsumerState<Think3minScreen>
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildAdBanner() {
+    return Container(
+      margin: const EdgeInsets.only(top: 20, bottom: 34),
+      width: double.infinity,
+      height: 50,
+      child: _bannerAd == null ? Container() : AdWidget(ad: _bannerAd!),
     );
   }
 }
