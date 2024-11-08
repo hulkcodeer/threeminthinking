@@ -67,6 +67,7 @@ class _Think3minScreenState extends ConsumerState<Think3minScreen>
   @override
   void initState() {
     super.initState();
+    print('Initial timeLeft: ${ref.read(thinkingStateProvider).timeLeft}');
     WidgetsBinding.instance.addObserver(this);
     _loadBannerAd();
 
@@ -154,6 +155,7 @@ class _Think3minScreenState extends ConsumerState<Think3minScreen>
   Future<void> loadSavedState() async {
     final prefs = await SharedPreferences.getInstance();
     final savedTimeLeft = prefs.getInt('timeLeft');
+    print('Saved timeLeft: $savedTimeLeft');
     final savedThinkingDesc = prefs.getString('thinkingDesc');
     final savedDate = prefs.getString('savedDate');
 

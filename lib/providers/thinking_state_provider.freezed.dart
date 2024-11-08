@@ -201,7 +201,7 @@ class _$ThinkingStateImpl
     with DiagnosticableTreeMixin
     implements _ThinkingState {
   const _$ThinkingStateImpl(
-      {this.timeLeft = 5,
+      {this.timeLeft = 180,
       this.showStartModal = false,
       this.showEndModal = false,
       this.thinkingDesc = "",
