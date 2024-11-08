@@ -8,7 +8,7 @@ part of 'thinking_state_provider.dart';
 
 _$ThinkingStateImpl _$$ThinkingStateImplFromJson(Map<String, dynamic> json) =>
     _$ThinkingStateImpl(
-      timeLeft: (json['timeLeft'] as num?)?.toInt() ?? 5,
+      timeLeft: (json['timeLeft'] as num?)?.toInt() ?? 180,
       showStartModal: json['showStartModal'] as bool? ?? false,
       showEndModal: json['showEndModal'] as bool? ?? false,
       thinkingDesc: json['thinkingDesc'] as String? ?? "",
