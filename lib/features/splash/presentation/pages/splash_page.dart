@@ -22,28 +22,6 @@ class _SplashPageState extends ConsumerState<SplashPage> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       _initialize();
-
-      ref.listen<AsyncValue<SplashState>>(splashViewModelProvider, (_, state) {
-        state.whenData((data) {
-          data.whenOrNull(
-            authenticated: () {
-              context.go('/makeVocabulary');
-            },
-            unauthenticated: () {
-              Timer(const Duration(seconds: 1), () {
-                if (mounted) {
-                  context.go('/makeVocabulary');
-                }
-              });
-            },
-            error: (message) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(message)),
-              );
-            },
-          );
-        });
-      });
     });
   }
 
@@ -55,6 +33,28 @@ class _SplashPageState extends ConsumerState<SplashPage> {
 
   @override
   Widget build(BuildContext context) {
+    ref.listen<AsyncValue<SplashState>>(splashViewModelProvider, (_, state) {
+      state.whenData((data) {
+        data.whenOrNull(
+          authenticated: () {
+            context.go('/makeVocabulary');
+          },
+          unauthenticated: () {
+            Timer(const Duration(seconds: 1), () {
+              if (mounted) {
+                context.go('/makeVocabulary');
+              }
+            });
+          },
+          error: (message) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(message)),
+            );
+          },
+        );
+      });
+    });
+
     return Scaffold(
       backgroundColor: AppColors.gray,
       body: Stack(

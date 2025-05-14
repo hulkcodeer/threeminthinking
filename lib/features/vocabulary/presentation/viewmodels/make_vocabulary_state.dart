@@ -5,6 +5,9 @@ part 'make_vocabulary_state.freezed.dart';
 @freezed
 class MakeVocabularyState with _$MakeVocabularyState {
   const factory MakeVocabularyState({
-    String? error,
+    @Default(false) bool isSearching,
+    @Default(false) bool isCreated,
+    Map<String, dynamic>? searchResult,
+    String? errorMessage,
   }) = _MakeVocabularyState;
 }

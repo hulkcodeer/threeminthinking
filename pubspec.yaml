@@ -60,6 +60,9 @@ dependencies:
   # for secure storage
   flutter_secure_storage: ^9.2.4
 
+  # for make vocabulary
+  just_audio: ^0.10.2
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

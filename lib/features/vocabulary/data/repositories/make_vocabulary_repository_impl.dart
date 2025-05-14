@@ -10,6 +10,22 @@ class MakeVocabularyRepositoryImpl implements MakeVocabularyRepository {
   MakeVocabularyRepositoryImpl(
     this._dataSource,
   );
+
+  @override
+  Future<bool> hasDefaultBookshelf() async {
+    return _dataSource.hasDefaultBookshelf();
+  }
+
+  @override
+  Future<bool> createDefaultBookshelf() async {
+    return _dataSource.createDefaultBookshelf();
+  }
+
+  @override
+  Future<bool> createWordbook(
+      String name, String description, String color, String languageFrom, String languageTo) async {
+    return _dataSource.createWordbook(name, description, color, languageFrom, languageTo);
+  }
 }
 
 @riverpod

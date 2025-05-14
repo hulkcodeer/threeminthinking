@@ -16,7 +16,10 @@ final _privateConstructorUsedError = UnsupportedError(
 
 /// @nodoc
 mixin _$MakeVocabularyState {
-  String? get error => throw _privateConstructorUsedError;
+  bool get isSearching => throw _privateConstructorUsedError;
+  bool get isCreated => throw _privateConstructorUsedError;
+  Map<String, dynamic>? get searchResult => throw _privateConstructorUsedError;
+  String? get errorMessage => throw _privateConstructorUsedError;
 
   /// Create a copy of MakeVocabularyState
   /// with the given fields replaced by the non-null parameter values.
@@ -31,7 +34,11 @@ abstract class $MakeVocabularyStateCopyWith<$Res> {
           MakeVocabularyState value, $Res Function(MakeVocabularyState) then) =
       _$MakeVocabularyStateCopyWithImpl<$Res, MakeVocabularyState>;
   @useResult
-  $Res call({String? error});
+  $Res call(
+      {bool isSearching,
+      bool isCreated,
+      Map<String, dynamic>? searchResult,
+      String? errorMessage});
 }
 
 /// @nodoc
@@ -49,12 +56,27 @@ class _$MakeVocabularyStateCopyWithImpl<$Res, $Val extends MakeVocabularyState>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? error = freezed,
+    Object? isSearching = null,
+    Object? isCreated = null,
+    Object? searchResult = freezed,
+    Object? errorMessage = freezed,
   }) {
     return _then(_value.copyWith(
-      error: freezed == error
-          ? _value.error
-          : error // ignore: cast_nullable_to_non_nullable
+      isSearching: null == isSearching
+          ? _value.isSearching
+          : isSearching // ignore: cast_nullable_to_non_nullable
+              as bool,
+      isCreated: null == isCreated
+          ? _value.isCreated
+          : isCreated // ignore: cast_nullable_to_non_nullable
+              as bool,
+      searchResult: freezed == searchResult
+          ? _value.searchResult
+          : searchResult // ignore: cast_nullable_to_non_nullable
+              as Map<String, dynamic>?,
+      errorMessage: freezed == errorMessage
+          ? _value.errorMessage
+          : errorMessage // ignore: cast_nullable_to_non_nullable
               as String?,
     ) as $Val);
   }
@@ -68,7 +90,11 @@ abstract class _$$MakeVocabularyStateImplCopyWith<$Res>
       __$$MakeVocabularyStateImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String? error});
+  $Res call(
+      {bool isSearching,
+      bool isCreated,
+      Map<String, dynamic>? searchResult,
+      String? errorMessage});
 }
 
 /// @nodoc
@@ -84,12 +110,27 @@ class __$$MakeVocabularyStateImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? error = freezed,
+    Object? isSearching = null,
+    Object? isCreated = null,
+    Object? searchResult = freezed,
+    Object? errorMessage = freezed,
   }) {
     return _then(_$MakeVocabularyStateImpl(
-      error: freezed == error
-          ? _value.error
-          : error // ignore: cast_nullable_to_non_nullable
+      isSearching: null == isSearching
+          ? _value.isSearching
+          : isSearching // ignore: cast_nullable_to_non_nullable
+              as bool,
+      isCreated: null == isCreated
+          ? _value.isCreated
+          : isCreated // ignore: cast_nullable_to_non_nullable
+              as bool,
+      searchResult: freezed == searchResult
+          ? _value._searchResult
+          : searchResult // ignore: cast_nullable_to_non_nullable
+              as Map<String, dynamic>?,
+      errorMessage: freezed == errorMessage
+          ? _value.errorMessage
+          : errorMessage // ignore: cast_nullable_to_non_nullable
               as String?,
     ));
   }
@@ -98,14 +139,35 @@ class __$$MakeVocabularyStateImplCopyWithImpl<$Res>
 /// @nodoc
 
 class _$MakeVocabularyStateImpl implements _MakeVocabularyState {
-  const _$MakeVocabularyStateImpl({this.error});
+  const _$MakeVocabularyStateImpl(
+      {this.isSearching = false,
+      this.isCreated = false,
+      final Map<String, dynamic>? searchResult,
+      this.errorMessage})
+      : _searchResult = searchResult;
 
   @override
-  final String? error;
+  @JsonKey()
+  final bool isSearching;
+  @override
+  @JsonKey()
+  final bool isCreated;
+  final Map<String, dynamic>? _searchResult;
+  @override
+  Map<String, dynamic>? get searchResult {
+    final value = _searchResult;
+    if (value == null) return null;
+    if (_searchResult is EqualUnmodifiableMapView) return _searchResult;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableMapView(value);
+  }
+
+  @override
+  final String? errorMessage;
 
   @override
   String toString() {
-    return 'MakeVocabularyState(error: $error)';
+    return 'MakeVocabularyState(isSearching: $isSearching, isCreated: $isCreated, searchResult: $searchResult, errorMessage: $errorMessage)';
   }
 
   @override
@@ -113,11 +175,19 @@ class _$MakeVocabularyStateImpl implements _MakeVocabularyState {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$MakeVocabularyStateImpl &&
-            (identical(other.error, error) || other.error == error));
+            (identical(other.isSearching, isSearching) ||
+                other.isSearching == isSearching) &&
+            (identical(other.isCreated, isCreated) ||
+                other.isCreated == isCreated) &&
+            const DeepCollectionEquality()
+                .equals(other._searchResult, _searchResult) &&
+            (identical(other.errorMessage, errorMessage) ||
+                other.errorMessage == errorMessage));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, error);
+  int get hashCode => Object.hash(runtimeType, isSearching, isCreated,
+      const DeepCollectionEquality().hash(_searchResult), errorMessage);
 
   /// Create a copy of MakeVocabularyState
   /// with the given fields replaced by the non-null parameter values.
@@ -130,11 +200,20 @@ class _$MakeVocabularyStateImpl implements _MakeVocabularyState {
 }
 
 abstract class _MakeVocabularyState implements MakeVocabularyState {
-  const factory _MakeVocabularyState({final String? error}) =
-      _$MakeVocabularyStateImpl;
+  const factory _MakeVocabularyState(
+      {final bool isSearching,
+      final bool isCreated,
+      final Map<String, dynamic>? searchResult,
+      final String? errorMessage}) = _$MakeVocabularyStateImpl;
 
   @override
-  String? get error;
+  bool get isSearching;
+  @override
+  bool get isCreated;
+  @override
+  Map<String, dynamic>? get searchResult;
+  @override
+  String? get errorMessage;
 
   /// Create a copy of MakeVocabularyState
   /// with the given fields replaced by the non-null parameter values.

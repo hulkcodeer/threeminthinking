@@ -9,93 +9,68 @@ class MakeVocabularySupabaseDataSource {
 
   MakeVocabularySupabaseDataSource(this._client);
 
-  // @override
-  // Future<ResponseDto<HardCarryDto>> getHardCarryInfo(String userId) async {
-  //   try {
-  //     // 1. 사용자와 커플 정보 조회
-  //     final userResponse = await _client
-  //         .from('User')
-  //         .select('*, couple:Couple(id, users:User(*))')
-  //         .eq('deviceId', userId)
-  //         .single();
+  Future<bool> hasDefaultBookshelf() async {
+    try {
+      final userId = _client.auth.currentUser?.id;
+      if (userId == null) return false;
 
-  //     if (userResponse == null || userResponse['couple'] == null) {
-  //       return ResponseDto(
-  //         success: false,
-  //         message: "User or couple not found",
-  //       );
-  //     }
+      final response = await _client.from('bookshelves').select('id').eq('user_id', userId).limit(1).maybeSingle();
 
-  //     if (userResponse['isShowHardCarry'] == true) {
-  //       return ResponseDto(success: true);
-  //     }
+      return response != null;
+    } catch (e) {
+      print('MakeVocabularyRepositoryImpl hasDefaultBookshelf error: $e');
+      return false;
+    }
+  }
 
-  //     // 2. 지난 주의 시작과 끝 날짜 계산
-  //     final today = DateTime.now();
-  //     final lastMonday = today
-  //         .subtract(
-  //           Duration(days: today.weekday + 6),
-  //         )
-  //         .copyWith(hour: 0, minute: 0, second: 0, millisecond: 0);
+  Future<bool> createDefaultBookshelf() async {
+    try {
+      final userId = _client.auth.currentUser?.id;
+      if (userId == null) return false;
 
-  //     final lastSunday = today
-  //         .subtract(
-  //           Duration(days: today.weekday),
-  //         )
-  //         .copyWith(hour: 23, minute: 59, second: 59, millisecond: 999);
+      await _client.from('bookshelves').insert({
+        'user_id': userId,
+        'name': '내 책장',
+        'description': '기본 책장',
+        'icon': 'bookshelf',
+        'color': 'blue',
+      });
 
-  //     // 3. 완료된 태스크 조회
-  //     final tasksResponse = await _client
-  //         .from('Task')
-  //         .select('*, assignee:User(*)')
-  //         .eq('coupleId', userResponse['couple']['id'])
-  //         .eq('isTogether', false)
-  //         .eq('status', 'COMPLETED')
-  //         .gte('createdAt', lastMonday.toIso8601String())
-  //         .lte('createdAt', lastSunday.toIso8601String());
+      return true;
+    } catch (e) {
+      print('MakeVocabularyRepositoryImpl createDefaultBookshelf error: $e');
+      return false;
+    }
+  }
 
-  //     // 4. 사용자별 완료 태스크 수 계산
-  //     final completedTasksByUser = <String, int>{};
-  //     for (final task in tasksResponse) {
-  //       if (task['assigneeId'] != null) {
-  //         completedTasksByUser[task['assigneeId']] =
-  //             (completedTasksByUser[task['assigneeId']] ?? 0) + 1;
-  //       }
-  //     }
+  Future<bool> createWordbook(
+      String name, String description, String color, String languageFrom, String languageTo) async {
+    try {
+      final userId = _client.auth.currentUser?.id;
+      if (userId == null) return false;
 
-  //     return ResponseDto(
-  //       success: true,
-  //       data: HardCarryDto(
-  //         winCount: completedTasksByUser.values.reduce((a, b) => a + b),
-  //         loseCount: 0,
-  //         winImageType: 'hardcarry',
-  //         loseImageType: 'hardcarry',
-  //         winNickname: userResponse['couple']['users'][0]['nickname'],
-  //         loseNickname: userResponse['couple']['users'][1]['nickname'],
-  //         period: {
-  //           'start': lastMonday,
-  //           'end': lastSunday,
-  //         },
-  //       ),
-  //     );
-  //   } catch (e) {
-  //     return ResponseDto(
-  //       success: false,
-  //       message: "Server Error: ${e.toString()}",
-  //     );
-  //   }
-  // }
+      // 사용자의 첫 번째 책장 ID 가져오기
+      final bookshelf = await _client.from('bookshelves').select('id').eq('user_id', userId).limit(1).single();
 
-  // @override
-  // Future<void> completeHardCarry(String userId) async {
-  //   try {
-  //     await _client
-  //         .from('User')
-  //         .update({'isShowHardCarry': true}).eq('deviceId', userId);
-  //   } catch (e) {
-  //     throw Exception('Failed to complete hardcarry: ${e.toString()}');
-  //   }
-  // }
+      final bookshelfId = bookshelf['id'];
+
+      // 단어장 생성
+      await _client.from('wordbooks').insert({
+        'user_id': userId,
+        'bookshelf_id': bookshelfId,
+        'name': name,
+        'description': description,
+        'color': color,
+        'language_from': languageFrom,
+        'language_to': languageTo,
+      });
+
+      return true;
+    } catch (e) {
+      print('MakeVocabularyRepositoryImpl createWordbook error: $e');
+      return false;
+    }
+  }
 }
 
 @riverpod
