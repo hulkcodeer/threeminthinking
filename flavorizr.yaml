@@ -1,0 +1,23 @@
+# flavor 설정
+flavors:
+  dev:
+    app:
+      name: "3분암기"
+
+    android:
+      applicationId: "com.mixdrops.threeminthinking.dev"
+      icon: "assets/images/Appicon_i.png"
+
+    ios:
+      bundleId: "com.mixdrops.threeminthinking.dev"
+
+  prod:
+    app:
+      name: "3분암기"
+
+    android:
+      applicationId: "com.mixdrops.threeminthinking"
+      icon: "assets/images/Appicon_i.png"
+
+    ios:
+      bundleId: "com.mixdrops.threeminthinking"

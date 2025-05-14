@@ -1,47 +1,57 @@
-import 'package:app_links/app_links.dart';
+import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:threeminthinking/flavors.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:threeminthinking/utils/router.dart';
+import 'app.dart';
 
-void main() async {
+import 'package:firebase_core/firebase_core.dart';
+
+FutureOr<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  final appLinks = AppLinks();
-
   try {
-    final initialLink = await appLinks.getInitialLink(); // 올바른 메서드 호출
-    print('Initial link: $initialLink');
-  } catch (e) {
-    print('Error retrieving initial link: $e');
-  }
-
-  await dotenv.load(fileName: '.env');
-
-  try {
-    await Supabase.initialize(
-      url: dotenv.get('SUPABASE_URL'),
-      anonKey: dotenv.get('SUPABASE_ANON_KEY'),
-    );
-  } catch (e) {
-    if (e is! AuthException && e is! NoSuchMethodError) {
-      print('Unhandled exception: $e');
-      // 추가적인 예외 처리 로직
+    // 만약 F.appFlavor가 설정되지 않은 경우에만 환경 변수를 확인
+    if (F.appFlavor == null) {
+      const environment = String.fromEnvironment('ENVIRONMENT', defaultValue: 'DEV');
+      F.appFlavor = environment == 'PRODUCTION' ? Flavor.prod : Flavor.dev;
     }
-  }
 
-  runApp(const ProviderScope(child: MyApp()));
-}
+    final options = F.firebaseOptions;
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+    if (options == null) {
+      SnackBar(content: Text('Firebase $options is null'));
+      throw Exception('Firebase options is null');
+    }
 
-  // This widget is the root of your application.
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp.router(
-      routerConfig: router,
-    );
+    MobileAds.instance.initialize();
+
+    try {
+      await Firebase.initializeApp(
+        name: F.name,
+        options: options,
+      );
+    } catch (e) {
+      SnackBar(content: Text('Firebase initialization error: $e'));
+      throw Exception('Failed to initialize Firebase: $e');
+    }
+
+    // Supabase 초기화
+    try {
+      await Supabase.initialize(
+        url: F.supabaseUrl,
+        anonKey: F.supabaseAnonKey,
+      );
+    } catch (e) {
+      SnackBar(content: Text('Supabase initialization error: $e'));
+      throw Exception('Failed to initialize Supabase: $e');
+    }
+
+    runApp(const ProviderScope(child: App()));
+  } catch (e, stack) {
+    SnackBar(content: Text('Initialization error: $e'));
+    // 에러 발생 시에도 앱은 실행
+    runApp(const ProviderScope(child: App()));
   }
 }
