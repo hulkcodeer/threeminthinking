@@ -19,34 +19,22 @@ class MakeVocabularyViewModel extends _$MakeVocabularyViewModel {
   }
 
   // 사전 API를 호출하여 단어 검색
-  Future<Map<String, dynamic>?> searchWord(String word) async {
+  Future<void> searchWord(String word) async {
     state = AsyncValue.loading();
 
     try {
-      final response = await http.get(
-        Uri.parse('https://api.dictionaryapi.dev/api/v2/entries/en/$word'),
-      );
+      final result = await _repository.searchWord(word);
+      print(result);
 
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        state = AsyncData(state.value!.copyWith(
-          searchResult: data[0],
-          isSearching: false,
-        ));
-        return data[0];
-      } else {
-        state = AsyncData(state.value!.copyWith(
-          errorMessage: '단어를 찾을 수 없습니다',
-          isSearching: false,
-        ));
-        return null;
-      }
+      state = AsyncData(state.value!.copyWith(
+        searchResult: result,
+        isSearching: false,
+      ));
     } catch (e) {
       state = AsyncData(state.value!.copyWith(
         errorMessage: '오류가 발생했습니다: $e',
         isSearching: false,
       ));
-      return null;
     }
   }
 

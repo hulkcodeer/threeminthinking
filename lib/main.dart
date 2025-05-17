@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:threeminthinking/flavors.dart';
@@ -27,6 +28,8 @@ FutureOr<void> main() async {
 
     MobileAds.instance.initialize();
 
+    await dotenv.load(fileName: ".env");
+
     try {
       await Firebase.initializeApp(
         name: F.name,
@@ -50,6 +53,8 @@ FutureOr<void> main() async {
 
     runApp(const ProviderScope(child: App()));
   } catch (e, stack) {
+    print('Initialization error: $e');
+    print('Initialization error stack: $stack');
     SnackBar(content: Text('Initialization error: $e'));
     // 에러 발생 시에도 앱은 실행
     runApp(const ProviderScope(child: App()));

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -30,33 +32,41 @@ class SplashSupabaseDataSource {
 
   Future<ResponseDto<UserInfoDto>> getUserInfoByDeviceId(String deviceId) async {
     try {
-      // 간소화된 쿼리로 사용자 기본 정보만 조회
-      final response = await _client
-          .from('users')
-          .select('id, deviceId, nickname, avatarImageType, inviteCode, coupleId')
-          .eq('deviceId', deviceId)
-          .maybeSingle();
+      final existingDevice = await _client.from('devices').select('user_id').eq('device_id', deviceId).maybeSingle();
 
-      // 사용자가 없는 경우
-      if (response == null) {
-        return const ResponseDto(
-          success: false,
-          message: 'User not found',
+      if (existingDevice != null) {
+        return ResponseDto(
+          success: true,
+          data: UserInfoDto(
+            id: existingDevice['user_id'],
+            deviceId: deviceId,
+          ),
+        );
+      } else {
+        final newUser = await _client
+            .from('users')
+            .insert({
+              'email': null, // 나중에 업데이트
+              'username': 'Anonymous User'
+            })
+            .select()
+            .single();
+
+        await _client.from('devices').insert({
+          'user_id': newUser['id'],
+          'device_id': deviceId,
+          'device_type': Platform.isIOS ? 'ios' : 'android',
+          'is_primary': true
+        });
+
+        return ResponseDto(
+          success: true,
+          data: UserInfoDto(
+            id: newUser['id'],
+            deviceId: deviceId,
+          ),
         );
       }
-
-      // 사용자 정보만 반환
-      return ResponseDto(
-        success: true,
-        data: UserInfoDto(
-          id: response['id'],
-          deviceId: response['deviceId'],
-          nickname: response['nickname'],
-          avatarImageType: response['avatarImageType'],
-          inviteCode: response['inviteCode'],
-          coupleId: response['coupleId'],
-        ),
-      );
     } catch (e) {
       print('UserInfoSupabaseDataSource error: $e');
       return const ResponseDto(

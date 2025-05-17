@@ -7,7 +7,7 @@ part of 'make_vocabulary_repository_impl.dart';
 // **************************************************************************
 
 String _$makeVocabularyRepositoryHash() =>
-    r'df381415e2875e629f4c744bdb2588acc1144dbe';
+    r'0d1929e404a24ab6d9805ace22f32dd524f39f8a';
 
 /// See also [makeVocabularyRepository].
 @ProviderFor(makeVocabularyRepository)

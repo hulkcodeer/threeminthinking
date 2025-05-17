@@ -7,7 +7,7 @@ part of 'make_vocabulary_viewmodel.dart';
 // **************************************************************************
 
 String _$makeVocabularyViewModelHash() =>
-    r'd16887bd9abacbd0cccabba16ea7d676c6ec434e';
+    r'85f9c5aeb7cd3560f7123527e424786669c2ac07';
 
 /// See also [MakeVocabularyViewModel].
 @ProviderFor(MakeVocabularyViewModel)

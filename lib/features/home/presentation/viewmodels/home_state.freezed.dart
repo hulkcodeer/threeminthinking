@@ -120,7 +120,7 @@ class __$$HomeStateImplCopyWithImpl<$Res>
 
 class _$HomeStateImpl implements _HomeState {
   const _$HomeStateImpl(
-      {this.selectedMenu = MenuType.weTodo,
+      {this.selectedMenu = MenuType.wordbook,
       this.error,
       this.isSubscribed = false});
 

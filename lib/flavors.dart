@@ -49,4 +49,13 @@ class F {
         return 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndqYXF1bWJxeWd2dnN3YnR0cGtuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mjc2OTkxNzcsImV4cCI6MjA0MzI3NTE3N30.QANpJ5i0a9--SRdtRLT2fz2jY0yL5ATjfD6k0l5-aG4';
     }
   }
+
+  static String get baseUrl {
+    switch (appFlavor) {
+      case Flavor.dev:
+        return 'https://api.openai.com/v1';
+      default:
+        return 'https://api.openai.com/v1';
+    }
+  }
 }

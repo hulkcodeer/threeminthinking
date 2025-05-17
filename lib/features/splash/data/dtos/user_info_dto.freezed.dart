@@ -22,11 +22,6 @@ UserInfoDto _$UserInfoDtoFromJson(Map<String, dynamic> json) {
 mixin _$UserInfoDto {
   String get id => throw _privateConstructorUsedError;
   String get deviceId => throw _privateConstructorUsedError;
-  String get nickname => throw _privateConstructorUsedError;
-  String get avatarImageType => throw _privateConstructorUsedError;
-  String? get inviteCode => throw _privateConstructorUsedError;
-  String? get pushToken => throw _privateConstructorUsedError;
-  String? get coupleId => throw _privateConstructorUsedError;
 
   /// Serializes this UserInfoDto to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -44,14 +39,7 @@ abstract class $UserInfoDtoCopyWith<$Res> {
           UserInfoDto value, $Res Function(UserInfoDto) then) =
       _$UserInfoDtoCopyWithImpl<$Res, UserInfoDto>;
   @useResult
-  $Res call(
-      {String id,
-      String deviceId,
-      String nickname,
-      String avatarImageType,
-      String? inviteCode,
-      String? pushToken,
-      String? coupleId});
+  $Res call({String id, String deviceId});
 }
 
 /// @nodoc
@@ -71,11 +59,6 @@ class _$UserInfoDtoCopyWithImpl<$Res, $Val extends UserInfoDto>
   $Res call({
     Object? id = null,
     Object? deviceId = null,
-    Object? nickname = null,
-    Object? avatarImageType = null,
-    Object? inviteCode = freezed,
-    Object? pushToken = freezed,
-    Object? coupleId = freezed,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -86,26 +69,6 @@ class _$UserInfoDtoCopyWithImpl<$Res, $Val extends UserInfoDto>
           ? _value.deviceId
           : deviceId // ignore: cast_nullable_to_non_nullable
               as String,
-      nickname: null == nickname
-          ? _value.nickname
-          : nickname // ignore: cast_nullable_to_non_nullable
-              as String,
-      avatarImageType: null == avatarImageType
-          ? _value.avatarImageType
-          : avatarImageType // ignore: cast_nullable_to_non_nullable
-              as String,
-      inviteCode: freezed == inviteCode
-          ? _value.inviteCode
-          : inviteCode // ignore: cast_nullable_to_non_nullable
-              as String?,
-      pushToken: freezed == pushToken
-          ? _value.pushToken
-          : pushToken // ignore: cast_nullable_to_non_nullable
-              as String?,
-      coupleId: freezed == coupleId
-          ? _value.coupleId
-          : coupleId // ignore: cast_nullable_to_non_nullable
-              as String?,
     ) as $Val);
   }
 }
@@ -118,14 +81,7 @@ abstract class _$$UserInfoDtoImplCopyWith<$Res>
       __$$UserInfoDtoImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call(
-      {String id,
-      String deviceId,
-      String nickname,
-      String avatarImageType,
-      String? inviteCode,
-      String? pushToken,
-      String? coupleId});
+  $Res call({String id, String deviceId});
 }
 
 /// @nodoc
@@ -143,11 +99,6 @@ class __$$UserInfoDtoImplCopyWithImpl<$Res>
   $Res call({
     Object? id = null,
     Object? deviceId = null,
-    Object? nickname = null,
-    Object? avatarImageType = null,
-    Object? inviteCode = freezed,
-    Object? pushToken = freezed,
-    Object? coupleId = freezed,
   }) {
     return _then(_$UserInfoDtoImpl(
       id: null == id
@@ -158,26 +109,6 @@ class __$$UserInfoDtoImplCopyWithImpl<$Res>
           ? _value.deviceId
           : deviceId // ignore: cast_nullable_to_non_nullable
               as String,
-      nickname: null == nickname
-          ? _value.nickname
-          : nickname // ignore: cast_nullable_to_non_nullable
-              as String,
-      avatarImageType: null == avatarImageType
-          ? _value.avatarImageType
-          : avatarImageType // ignore: cast_nullable_to_non_nullable
-              as String,
-      inviteCode: freezed == inviteCode
-          ? _value.inviteCode
-          : inviteCode // ignore: cast_nullable_to_non_nullable
-              as String?,
-      pushToken: freezed == pushToken
-          ? _value.pushToken
-          : pushToken // ignore: cast_nullable_to_non_nullable
-              as String?,
-      coupleId: freezed == coupleId
-          ? _value.coupleId
-          : coupleId // ignore: cast_nullable_to_non_nullable
-              as String?,
     ));
   }
 }
@@ -185,14 +116,7 @@ class __$$UserInfoDtoImplCopyWithImpl<$Res>
 /// @nodoc
 @JsonSerializable()
 class _$UserInfoDtoImpl implements _UserInfoDto {
-  const _$UserInfoDtoImpl(
-      {required this.id,
-      required this.deviceId,
-      required this.nickname,
-      required this.avatarImageType,
-      this.inviteCode,
-      this.pushToken,
-      this.coupleId});
+  const _$UserInfoDtoImpl({required this.id, required this.deviceId});
 
   factory _$UserInfoDtoImpl.fromJson(Map<String, dynamic> json) =>
       _$$UserInfoDtoImplFromJson(json);
@@ -201,20 +125,10 @@ class _$UserInfoDtoImpl implements _UserInfoDto {
   final String id;
   @override
   final String deviceId;
-  @override
-  final String nickname;
-  @override
-  final String avatarImageType;
-  @override
-  final String? inviteCode;
-  @override
-  final String? pushToken;
-  @override
-  final String? coupleId;
 
   @override
   String toString() {
-    return 'UserInfoDto(id: $id, deviceId: $deviceId, nickname: $nickname, avatarImageType: $avatarImageType, inviteCode: $inviteCode, pushToken: $pushToken, coupleId: $coupleId)';
+    return 'UserInfoDto(id: $id, deviceId: $deviceId)';
   }
 
   @override
@@ -224,23 +138,12 @@ class _$UserInfoDtoImpl implements _UserInfoDto {
             other is _$UserInfoDtoImpl &&
             (identical(other.id, id) || other.id == id) &&
             (identical(other.deviceId, deviceId) ||
-                other.deviceId == deviceId) &&
-            (identical(other.nickname, nickname) ||
-                other.nickname == nickname) &&
-            (identical(other.avatarImageType, avatarImageType) ||
-                other.avatarImageType == avatarImageType) &&
-            (identical(other.inviteCode, inviteCode) ||
-                other.inviteCode == inviteCode) &&
-            (identical(other.pushToken, pushToken) ||
-                other.pushToken == pushToken) &&
-            (identical(other.coupleId, coupleId) ||
-                other.coupleId == coupleId));
+                other.deviceId == deviceId));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, id, deviceId, nickname,
-      avatarImageType, inviteCode, pushToken, coupleId);
+  int get hashCode => Object.hash(runtimeType, id, deviceId);
 
   /// Create a copy of UserInfoDto
   /// with the given fields replaced by the non-null parameter values.
@@ -261,12 +164,7 @@ class _$UserInfoDtoImpl implements _UserInfoDto {
 abstract class _UserInfoDto implements UserInfoDto {
   const factory _UserInfoDto(
       {required final String id,
-      required final String deviceId,
-      required final String nickname,
-      required final String avatarImageType,
-      final String? inviteCode,
-      final String? pushToken,
-      final String? coupleId}) = _$UserInfoDtoImpl;
+      required final String deviceId}) = _$UserInfoDtoImpl;
 
   factory _UserInfoDto.fromJson(Map<String, dynamic> json) =
       _$UserInfoDtoImpl.fromJson;
@@ -275,16 +173,6 @@ abstract class _UserInfoDto implements UserInfoDto {
   String get id;
   @override
   String get deviceId;
-  @override
-  String get nickname;
-  @override
-  String get avatarImageType;
-  @override
-  String? get inviteCode;
-  @override
-  String? get pushToken;
-  @override
-  String? get coupleId;
 
   /// Create a copy of UserInfoDto
   /// with the given fields replaced by the non-null parameter values.
